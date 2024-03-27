@@ -20,6 +20,10 @@ type PartitionTable struct {
 	SectorSize   uint64 // Sector size in bytes
 	ExtraPadding uint64 // Extra space at the end of the partition table (sectors)
 	StartOffset  uint64 // Starting offset of the first partition in the table (Mb)
+
+	// Optional default partitioning mode for the PT. If not set, the
+	// AutoLVMPartitioningMode will be used as the default.
+	DefaultPartitioningMode *PartitioningMode
 }
 
 type PartitioningMode string
@@ -36,14 +40,21 @@ const (
 	// RawPartitioningMode always creates a raw layout.
 	RawPartitioningMode PartitioningMode = "raw"
 
-	// DefaultPartitioningMode is AutoLVMPartitioningMode and is the empty state
+	// DefaultPartitioningMode is the empty state.
+	// If the base partition table has a DefaultPartitioningMode set, it will
+	// be used. Otherwise, the AutoLVMPartitioningMode will be used.
 	DefaultPartitioningMode PartitioningMode = ""
 )
 
 func NewPartitionTable(basePT *PartitionTable, mountpoints []blueprint.FilesystemCustomization, imageSize uint64, mode PartitioningMode, requiredSizes map[string]uint64, rng *rand.Rand) (*PartitionTable, error) {
 	newPT := basePT.Clone().(*PartitionTable)
 
-	if basePT.features().LVM && mode == RawPartitioningMode {
+	partitioningMode := mode
+	if partitioningMode == DefaultPartitioningMode && newPT.DefaultPartitioningMode != nil {
+		partitioningMode = *newPT.DefaultPartitioningMode
+	}
+
+	if basePT.features().LVM && partitioningMode == RawPartitioningMode {
 		return nil, fmt.Errorf("raw partitioning mode set for a base partition table with LVM, this is unsupported")
 	}
 
@@ -51,7 +62,7 @@ func NewPartitionTable(basePT *PartitionTable, mountpoints []blueprint.Filesyste
 	newMountpoints, _ := newPT.applyCustomization(mountpoints, false)
 
 	var ensureLVM bool
-	switch mode {
+	switch partitioningMode {
 	case LVMPartitioningMode:
 		ensureLVM = true
 	case RawPartitioningMode:
@@ -106,13 +117,14 @@ func (pt *PartitionTable) Clone() Entity {
 	}
 
 	clone := &PartitionTable{
-		Size:         pt.Size,
-		UUID:         pt.UUID,
-		Type:         pt.Type,
-		Partitions:   make([]Partition, len(pt.Partitions)),
-		SectorSize:   pt.SectorSize,
-		ExtraPadding: pt.ExtraPadding,
-		StartOffset:  pt.StartOffset,
+		Size:                    pt.Size,
+		UUID:                    pt.UUID,
+		Type:                    pt.Type,
+		Partitions:              make([]Partition, len(pt.Partitions)),
+		SectorSize:              pt.SectorSize,
+		ExtraPadding:            pt.ExtraPadding,
+		StartOffset:             pt.StartOffset,
+		DefaultPartitioningMode: pt.DefaultPartitioningMode,
 	}
 
 	for idx, partition := range pt.Partitions {

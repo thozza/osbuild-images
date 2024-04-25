@@ -213,6 +213,17 @@
       "ami"
     ]
   },
+  "./configs/customization-pkgs-regression.json": {
+    "distros": [
+      "fedora-39"
+    ],
+    "arches": [
+      "x86_64"
+    ],
+    "image-types": [
+      "qcow2"
+    ]
+  },
   "./configs/ostree.json": {
     "image-types": [
       "edge-commit",

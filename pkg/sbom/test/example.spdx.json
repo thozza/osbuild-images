@@ -1,0 +1,703 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "creationInfo": {
+    "created": "2024-09-06T08:12:28Z",
+    "creators": [
+      "Tool: osbuild-128"
+    ]
+  },
+  "dataLicense": "CC0-1.0",
+  "name": "sbom-by-osbuild-128",
+  "spdxVersion": "SPDX-2.3",
+  "documentNamespace": "https://osbuild.org/spdxdocs/sbom-by-osbuild-128-6bb434da-523a-463f-bc4c-69460af00040",
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-356f4620-c03e-3830-b013-ddbfee6665aa",
+      "name": "basesystem",
+      "downloadLocation": "http://ftp.fi.muni.cz/pub/linux/fedora/linux/releases/40/Everything/x86_64/os/Packages/b/basesystem-11-20.fc40.noarch.rpm",
+      "filesAnalyzed": false,
+      "versionInfo": "11",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "6404b1028262aeaf3e083f08959969abea1301f7f5e8610492cf900b3d13d5db"
+        }
+      ],
+      "sourceInfo": "Source RPM: basesystem-11-20.fc40.src.rpm",
+      "licenseDeclared": "LicenseRef-Fedora-Public-Domain",
+      "summary": "The skeleton package which defines a simple Fedora system",
+      "description": "Basesystem defines the components of a basic Fedora system\n(for example, the package installation order to use during bootstrapping).\nBasesystem should be in every installation of a system, and it\nshould never be removed. As the package has no content, it is Public Domain.",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:rpm/fedora%20project/basesystem@11-20.fc40?arch=noarch&repository_url=http://ftp.fi.muni.cz/pub/linux/fedora/linux/releases/40/Everything/x86_64/os"
+        }
+      ],
+      "builtDate": "2024-01-23T00:11:15Z"
+    },
+    {
+      "SPDXID": "SPDXRef-79a9433e-3586-3ab4-9fad-58da4803b03d",
+      "name": "bash",
+      "downloadLocation": "http://ftp.fi.muni.cz/pub/linux/fedora/linux/releases/40/Everything/x86_64/os/Packages/b/bash-5.2.26-3.fc40.x86_64.rpm",
+      "filesAnalyzed": false,
+      "versionInfo": "5.2.26",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "156e073308cb28a5a699d6ffafc71cbd28487628fd05471e1978e4b9a5c7a802"
+        }
+      ],
+      "homepage": "https://www.gnu.org/software/bash",
+      "sourceInfo": "Source RPM: bash-5.2.26-3.fc40.src.rpm",
+      "licenseDeclared": "GPL-3.0-or-later",
+      "summary": "The GNU Bourne Again shell",
+      "description": "The GNU Bourne Again shell (Bash) is a shell or command language\ninterpreter that is compatible with the Bourne shell (sh). Bash\nincorporates useful features from the Korn shell (ksh) and the C shell\n(csh). Most sh scripts can be run by bash without modification.",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:rpm/fedora%20project/bash@5.2.26-3.fc40?arch=x86_64&repository_url=http://ftp.fi.muni.cz/pub/linux/fedora/linux/releases/40/Everything/x86_64/os"
+        }
+      ],
+      "builtDate": "2024-02-09T14:54:14Z"
+    },
+    {
+      "SPDXID": "SPDXRef-8d8a3c7a-b77b-39f0-a2e0-13b29f7e0614",
+      "name": "filesystem",
+      "downloadLocation": "http://ftp.fi.muni.cz/pub/linux/fedora/linux/releases/40/Everything/x86_64/os/Packages/f/filesystem-3.18-8.fc40.x86_64.rpm",
+      "filesAnalyzed": false,
+      "versionInfo": "3.18",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "063af3db3808bea0d5c07dbb2d8369b275e1d05ad0850c80a8fec0413f47cd64"
+        }
+      ],
+      "homepage": "https://pagure.io/filesystem",
+      "sourceInfo": "Source RPM: filesystem-3.18-8.fc40.src.rpm",
+      "licenseDeclared": "LicenseRef-Fedora-Public-Domain",
+      "summary": "The basic directory layout for a Linux system",
+      "description": "The filesystem package is one of the basic packages that is installed\non a Linux system. Filesystem contains the basic directory layout\nfor a Linux operating system, including the correct permissions for\nthe directories.",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:rpm/fedora%20project/filesystem@3.18-8.fc40?arch=x86_64&repository_url=http://ftp.fi.muni.cz/pub/linux/fedora/linux/releases/40/Everything/x86_64/os"
+        }
+      ],
+      "builtDate": "2024-01-24T11:37:55Z"
+    },
+    {
+      "SPDXID": "SPDXRef-4a2934eb-3b95-38ea-a914-1caf4af642cb",
+      "name": "ncurses-base",
+      "downloadLocation": "http://ftp.fi.muni.cz/pub/linux/fedora/linux/releases/40/Everything/x86_64/os/Packages/n/ncurses-base-6.4-12.20240127.fc40.noarch.rpm",
+      "filesAnalyzed": false,
+      "versionInfo": "6.4",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "8a93376ce7423bd1a649a13f4b5105f270b4603f5cf3b3e230bdbda7f25dd788"
+        }
+      ],
+      "homepage": "https://invisible-island.net/ncurses/ncurses.html",
+      "sourceInfo": "Source RPM: ncurses-6.4-12.20240127.fc40.src.rpm",
+      "licenseDeclared": "MIT-open-group",
+      "summary": "Descriptions of common terminals",
+      "description": "This package contains descriptions of common terminals. Other terminal\ndescriptions are included in the ncurses-term package.",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:rpm/fedora%20project/ncurses-base@6.4-12.20240127.fc40?arch=noarch&repository_url=http://ftp.fi.muni.cz/pub/linux/fedora/linux/releases/40/Everything/x86_64/os"
+        }
+      ],
+      "builtDate": "2024-02-01T14:11:30Z"
+    },
+    {
+      "SPDXID": "SPDXRef-a7c374d5-79fc-3408-8978-8e9dc67f1bcf",
+      "name": "ncurses-libs",
+      "downloadLocation": "http://ftp.fi.muni.cz/pub/linux/fedora/linux/releases/40/Everything/x86_64/os/Packages/n/ncurses-libs-6.4-12.20240127.fc40.x86_64.rpm",
+      "filesAnalyzed": false,
+      "versionInfo": "6.4",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a18edf32e89aefd453998d5d0ec3aa1ea193dac43f80b99db195abd7e8cf1a04"
+        }
+      ],
+      "homepage": "https://invisible-island.net/ncurses/ncurses.html",
+      "sourceInfo": "Source RPM: ncurses-6.4-12.20240127.fc40.src.rpm",
+      "licenseDeclared": "MIT-open-group",
+      "summary": "Ncurses libraries",
+      "description": "The curses library routines are a terminal-independent method of\nupdating character screens with reasonable optimization.  The ncurses\n(new curses) library is a freely distributable replacement for the\ndiscontinued 4.4 BSD classic curses library.\n\nThis package contains the ncurses libraries.",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:rpm/fedora%20project/ncurses-libs@6.4-12.20240127.fc40?arch=x86_64&repository_url=http://ftp.fi.muni.cz/pub/linux/fedora/linux/releases/40/Everything/x86_64/os"
+        }
+      ],
+      "builtDate": "2024-02-01T14:11:27Z"
+    },
+    {
+      "SPDXID": "SPDXRef-aa6b5f34-5db8-3257-8a59-5b9ed1f88967",
+      "name": "setup",
+      "downloadLocation": "http://ftp.fi.muni.cz/pub/linux/fedora/linux/releases/40/Everything/x86_64/os/Packages/s/setup-2.14.5-2.fc40.noarch.rpm",
+      "filesAnalyzed": false,
+      "versionInfo": "2.14.5",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "89862f646cd64e81497f01a8b69ab30ac8968c47afef92a2c333608fdb90ccc1"
+        }
+      ],
+      "homepage": "https://pagure.io/setup/",
+      "sourceInfo": "Source RPM: setup-2.14.5-2.fc40.src.rpm",
+      "licenseDeclared": "LicenseRef-Fedora-Public-Domain",
+      "summary": "A set of system configuration and setup files",
+      "description": "The setup package contains a set of important system configuration and\nsetup files, such as passwd, group, and profile.",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:rpm/fedora%20project/setup@2.14.5-2.fc40?arch=noarch&repository_url=http://ftp.fi.muni.cz/pub/linux/fedora/linux/releases/40/Everything/x86_64/os"
+        }
+      ],
+      "builtDate": "2024-01-27T02:48:13Z"
+    },
+    {
+      "SPDXID": "SPDXRef-bf9f71bd-837a-3d84-96d5-b8dcb026d1a4",
+      "name": "fedora-gpg-keys",
+      "downloadLocation": "https://mirror.karneval.cz/pub/linux/fedora/linux/updates/40/Everything/x86_64/Packages/f/fedora-gpg-keys-40-2.noarch.rpm",
+      "filesAnalyzed": false,
+      "versionInfo": "40",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "849feb04544096f9bbe16bc78c2198708fe658bdafa08575c911e538a7d31c18"
+        }
+      ],
+      "homepage": "https://fedoraproject.org/",
+      "sourceInfo": "Source RPM: fedora-repos-40-2.src.rpm",
+      "licenseDeclared": "MIT",
+      "summary": "Fedora RPM keys",
+      "description": "This package provides the RPM signature keys.",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:rpm/fedora%20project/fedora-gpg-keys@40-2?arch=noarch&repository_url=https://mirror.karneval.cz/pub/linux/fedora/linux/updates/40/Everything/x86_64"
+        }
+      ],
+      "builtDate": "2024-05-25T18:37:36Z"
+    },
+    {
+      "SPDXID": "SPDXRef-6171219d-d37a-3bde-966d-b18838faf379",
+      "name": "fedora-release",
+      "downloadLocation": "https://mirror.karneval.cz/pub/linux/fedora/linux/updates/40/Everything/x86_64/Packages/f/fedora-release-40-39.noarch.rpm",
+      "filesAnalyzed": false,
+      "versionInfo": "40",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "bd62f80ae7dc50c20b0633d86f1c4a9f205f7df13c8ee1a5d5f624872c29271e"
+        }
+      ],
+      "homepage": "https://fedoraproject.org/",
+      "sourceInfo": "Source RPM: fedora-release-40-39.src.rpm",
+      "licenseDeclared": "MIT",
+      "summary": "Fedora release files",
+      "description": "Fedora release files such as various /etc/ files that define the release\nand systemd preset files that determine which services are enabled by default.",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:rpm/fedora%20project/fedora-release@40-39?arch=noarch&repository_url=https://mirror.karneval.cz/pub/linux/fedora/linux/updates/40/Everything/x86_64"
+        }
+      ],
+      "builtDate": "2024-04-14T18:14:18Z"
+    },
+    {
+      "SPDXID": "SPDXRef-4882f8f5-f771-3327-850b-e007b7908170",
+      "name": "fedora-release-common",
+      "downloadLocation": "https://mirror.karneval.cz/pub/linux/fedora/linux/updates/40/Everything/x86_64/Packages/f/fedora-release-common-40-39.noarch.rpm",
+      "filesAnalyzed": false,
+      "versionInfo": "40",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "590c9439a81fb9e35a8b4d19dc159ce09b756f8f7f66a6290d8785f424d97003"
+        }
+      ],
+      "homepage": "https://fedoraproject.org/",
+      "sourceInfo": "Source RPM: fedora-release-40-39.src.rpm",
+      "licenseDeclared": "MIT",
+      "summary": "Fedora release files",
+      "description": "Release files common to all Editions and Spins of Fedora",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:rpm/fedora%20project/fedora-release-common@40-39?arch=noarch&repository_url=https://mirror.karneval.cz/pub/linux/fedora/linux/updates/40/Everything/x86_64"
+        }
+      ],
+      "builtDate": "2024-04-14T18:14:18Z"
+    },
+    {
+      "SPDXID": "SPDXRef-130a2ae5-3cce-3c42-935b-7dfbd643704b",
+      "name": "fedora-release-identity-basic",
+      "downloadLocation": "https://mirror.karneval.cz/pub/linux/fedora/linux/updates/40/Everything/x86_64/Packages/f/fedora-release-identity-basic-40-39.noarch.rpm",
+      "filesAnalyzed": false,
+      "versionInfo": "40",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "057acf25df0f6b028657790b2addca123faac0b80639ac6da13632dc7811d6f3"
+        }
+      ],
+      "homepage": "https://fedoraproject.org/",
+      "sourceInfo": "Source RPM: fedora-release-40-39.src.rpm",
+      "licenseDeclared": "MIT",
+      "summary": "Package providing the basic Fedora identity",
+      "description": "Provides the necessary files for a Fedora installation that is not identifying\nitself as a particular Edition or Spin.",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:rpm/fedora%20project/fedora-release-identity-basic@40-39?arch=noarch&repository_url=https://mirror.karneval.cz/pub/linux/fedora/linux/updates/40/Everything/x86_64"
+        }
+      ],
+      "builtDate": "2024-04-14T18:14:18Z"
+    },
+    {
+      "SPDXID": "SPDXRef-f0a57c02-9227-3b8e-afb3-e1ff052c1fe6",
+      "name": "fedora-repos",
+      "downloadLocation": "https://mirror.karneval.cz/pub/linux/fedora/linux/updates/40/Everything/x86_64/Packages/f/fedora-repos-40-2.noarch.rpm",
+      "filesAnalyzed": false,
+      "versionInfo": "40",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e85d69eeea62f4f5a7c6584bc8bae3cb559c1c381838ca89f7d63b28d2368c4b"
+        }
+      ],
+      "homepage": "https://fedoraproject.org/",
+      "sourceInfo": "Source RPM: fedora-repos-40-2.src.rpm",
+      "licenseDeclared": "MIT",
+      "summary": "Fedora package repositories",
+      "description": "Fedora package repository files for yum and dnf along with gpg public keys.",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:rpm/fedora%20project/fedora-repos@40-2?arch=noarch&repository_url=https://mirror.karneval.cz/pub/linux/fedora/linux/updates/40/Everything/x86_64"
+        }
+      ],
+      "builtDate": "2024-05-25T18:37:36Z"
+    },
+    {
+      "SPDXID": "SPDXRef-40bd79f4-044c-3f48-8c3e-4f44d5f98421",
+      "name": "glibc",
+      "downloadLocation": "https://mirror.karneval.cz/pub/linux/fedora/linux/updates/40/Everything/x86_64/Packages/g/glibc-2.39-22.fc40.x86_64.rpm",
+      "filesAnalyzed": false,
+      "versionInfo": "2.39",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "726a1d707dfcf20d1f4c94f76bdba38d166eb574ecc2d83ec438bdc161f3ec27"
+        }
+      ],
+      "homepage": "http://www.gnu.org/software/glibc/",
+      "sourceInfo": "Source RPM: glibc-2.39-22.fc40.src.rpm",
+      "licenseDeclared": "LGPL-2.1-or-later AND SunPro AND LGPL-2.1-or-later WITH GCC-exception-2.0 AND BSD-3-Clause AND GPL-2.0-or-later AND LGPL-2.1-or-later WITH GNU-compiler-exception AND GPL-2.0-only AND ISC AND LicenseRef-Fedora-Public-Domain AND HPND AND CMU-Mach AND LGPL-2.1-only AND LGPL-2.0-or-later AND Unicode-DFS-2015 AND GFDL-1.1-or-later AND GPL-1.0-or-later AND FSFUL AND MIT AND Inner-Net-2.0 AND X11 AND GPL-2.0-or-later WITH GCC-exception-2.0 AND GFDL-1.3-only AND GFDL-1.1-only",
+      "summary": "The GNU libc libraries",
+      "description": "The glibc package contains standard libraries which are used by\nmultiple programs on the system. In order to save disk space and\nmemory, as well as to make upgrading easier, common system code is\nkept in one place and shared between programs. This particular package\ncontains the most important sets of shared libraries: the standard C\nlibrary and the standard math library. Without these two libraries, a\nLinux system will not function.",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:rpm/fedora%20project/glibc@2.39-22.fc40?arch=x86_64&repository_url=https://mirror.karneval.cz/pub/linux/fedora/linux/updates/40/Everything/x86_64"
+        }
+      ],
+      "builtDate": "2024-07-31T22:06:58Z"
+    },
+    {
+      "SPDXID": "SPDXRef-effc18c2-565b-3651-9281-ebbdcdf42288",
+      "name": "glibc-common",
+      "downloadLocation": "https://mirror.karneval.cz/pub/linux/fedora/linux/updates/40/Everything/x86_64/Packages/g/glibc-common-2.39-22.fc40.x86_64.rpm",
+      "filesAnalyzed": false,
+      "versionInfo": "2.39",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0b502c1140a1f6461dbd63d3daefedded6c705769476cec5e69466aab7693ea6"
+        }
+      ],
+      "homepage": "http://www.gnu.org/software/glibc/",
+      "sourceInfo": "Source RPM: glibc-2.39-22.fc40.src.rpm",
+      "licenseDeclared": "LGPL-2.1-or-later AND SunPro AND LGPL-2.1-or-later WITH GCC-exception-2.0 AND BSD-3-Clause AND GPL-2.0-or-later AND LGPL-2.1-or-later WITH GNU-compiler-exception AND GPL-2.0-only AND ISC AND LicenseRef-Fedora-Public-Domain AND HPND AND CMU-Mach AND LGPL-2.1-only AND LGPL-2.0-or-later AND Unicode-DFS-2015 AND GFDL-1.1-or-later AND GPL-1.0-or-later AND FSFUL AND MIT AND Inner-Net-2.0 AND X11 AND GPL-2.0-or-later WITH GCC-exception-2.0 AND GFDL-1.3-only AND GFDL-1.1-only",
+      "summary": "Common binaries and locale data for glibc",
+      "description": "The glibc-common package includes common binaries for the GNU libc\nlibraries, as well as national language (locale) support.",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:rpm/fedora%20project/glibc-common@2.39-22.fc40?arch=x86_64&repository_url=https://mirror.karneval.cz/pub/linux/fedora/linux/updates/40/Everything/x86_64"
+        }
+      ],
+      "builtDate": "2024-07-31T22:06:58Z"
+    },
+    {
+      "SPDXID": "SPDXRef-0eb0872f-8d70-3b13-81c0-ed95f54012ac",
+      "name": "glibc-gconv-extra",
+      "downloadLocation": "https://mirror.karneval.cz/pub/linux/fedora/linux/updates/40/Everything/x86_64/Packages/g/glibc-gconv-extra-2.39-22.fc40.x86_64.rpm",
+      "filesAnalyzed": false,
+      "versionInfo": "2.39",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c185634bd4f161c35292daa028823a607c78f1e71727b6c506d640771ddd88aa"
+        }
+      ],
+      "homepage": "http://www.gnu.org/software/glibc/",
+      "sourceInfo": "Source RPM: glibc-2.39-22.fc40.src.rpm",
+      "licenseDeclared": "LGPL-2.1-or-later AND SunPro AND LGPL-2.1-or-later WITH GCC-exception-2.0 AND BSD-3-Clause AND GPL-2.0-or-later AND LGPL-2.1-or-later WITH GNU-compiler-exception AND GPL-2.0-only AND ISC AND LicenseRef-Fedora-Public-Domain AND HPND AND CMU-Mach AND LGPL-2.1-only AND LGPL-2.0-or-later AND Unicode-DFS-2015 AND GFDL-1.1-or-later AND GPL-1.0-or-later AND FSFUL AND MIT AND Inner-Net-2.0 AND X11 AND GPL-2.0-or-later WITH GCC-exception-2.0 AND GFDL-1.3-only AND GFDL-1.1-only",
+      "summary": "All iconv converter modules for glibc.",
+      "description": "This package contains all iconv converter modules built in glibc.",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:rpm/fedora%20project/glibc-gconv-extra@2.39-22.fc40?arch=x86_64&repository_url=https://mirror.karneval.cz/pub/linux/fedora/linux/updates/40/Everything/x86_64"
+        }
+      ],
+      "builtDate": "2024-07-31T22:06:58Z"
+    },
+    {
+      "SPDXID": "SPDXRef-5031d108-936f-3d7e-9258-5688aa081879",
+      "name": "glibc-minimal-langpack",
+      "downloadLocation": "https://mirror.karneval.cz/pub/linux/fedora/linux/updates/40/Everything/x86_64/Packages/g/glibc-minimal-langpack-2.39-22.fc40.x86_64.rpm",
+      "filesAnalyzed": false,
+      "versionInfo": "2.39",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e99290c1fa76536f0bb0024dbe14527a6d5efcf00436493f705a75c6f76d3df3"
+        }
+      ],
+      "homepage": "http://www.gnu.org/software/glibc/",
+      "sourceInfo": "Source RPM: glibc-2.39-22.fc40.src.rpm",
+      "licenseDeclared": "LGPL-2.1-or-later AND SunPro AND LGPL-2.1-or-later WITH GCC-exception-2.0 AND BSD-3-Clause AND GPL-2.0-or-later AND LGPL-2.1-or-later WITH GNU-compiler-exception AND GPL-2.0-only AND ISC AND LicenseRef-Fedora-Public-Domain AND HPND AND CMU-Mach AND LGPL-2.1-only AND LGPL-2.0-or-later AND Unicode-DFS-2015 AND GFDL-1.1-or-later AND GPL-1.0-or-later AND FSFUL AND MIT AND Inner-Net-2.0 AND X11 AND GPL-2.0-or-later WITH GCC-exception-2.0 AND GFDL-1.3-only AND GFDL-1.1-only",
+      "summary": "Minimal language packs for glibc.",
+      "description": "This is a Meta package that is used to install minimal language packs.\nThis package ensures you can use C, POSIX, or C.UTF-8 locales, but\nnothing else. It is designed for assembling a minimal system.",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:rpm/fedora%20project/glibc-minimal-langpack@2.39-22.fc40?arch=x86_64&repository_url=https://mirror.karneval.cz/pub/linux/fedora/linux/updates/40/Everything/x86_64"
+        }
+      ],
+      "builtDate": "2024-07-31T22:06:58Z"
+    },
+    {
+      "SPDXID": "SPDXRef-5ff5f6cf-8999-3464-945d-dad61d430b10",
+      "name": "libgcc",
+      "downloadLocation": "https://mirror.karneval.cz/pub/linux/fedora/linux/updates/40/Everything/x86_64/Packages/l/libgcc-14.2.1-1.fc40.x86_64.rpm",
+      "filesAnalyzed": false,
+      "versionInfo": "14.2.1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ee6aa81323dedfdda0f6f845ea0ee8e03cf67569fb1c71335e7ded797efc97db"
+        }
+      ],
+      "homepage": "http://gcc.gnu.org",
+      "sourceInfo": "Source RPM: gcc-14.2.1-1.fc40.src.rpm",
+      "licenseDeclared": "GPL-3.0-or-later AND LGPL-3.0-or-later AND (GPL-3.0-or-later WITH GCC-exception-3.1) AND (GPL-3.0-or-later WITH Texinfo-exception) AND (LGPL-2.1-or-later WITH GCC-exception-2.0) AND (GPL-2.0-or-later WITH GCC-exception-2.0) AND (GPL-2.0-or-later WITH GNU-compiler-exception) AND BSL-1.0 AND GFDL-1.3-or-later AND Linux-man-pages-copyleft-2-para AND SunPro AND BSD-1-Clause AND BSD-2-Clause AND BSD-2-Clause-Views AND BSD-3-Clause AND BSD-4-Clause AND BSD-Source-Code AND Zlib AND MIT AND Apache-2.0 AND (Apache-2.0 WITH LLVM-Exception) AND ZPL-2.1 AND ISC AND LicenseRef-Fedora-Public-Domain AND HP-1986 AND curl AND Martin-Birgmeier AND HPND-Markus-Kuhn AND dtoa AND SMLNJ AND AMD-newlib AND OAR AND HPND-merchantability-variant AND HPND-Intel",
+      "summary": "GCC version 14 shared support library",
+      "description": "This package contains GCC shared support library which is needed\ne.g. for exception handling support.",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:rpm/fedora%20project/libgcc@14.2.1-1.fc40?arch=x86_64&repository_url=https://mirror.karneval.cz/pub/linux/fedora/linux/updates/40/Everything/x86_64"
+        }
+      ],
+      "builtDate": "2024-08-01T19:35:24Z"
+    },
+    {
+      "SPDXID": "SPDXRef-1acb9e3b-62d3-3dd1-950c-cc95038aaccb",
+      "name": "tzdata",
+      "downloadLocation": "https://mirror.karneval.cz/pub/linux/fedora/linux/updates/40/Everything/x86_64/Packages/t/tzdata-2024a-5.fc40.noarch.rpm",
+      "filesAnalyzed": false,
+      "versionInfo": "2024a",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0bd358e7dfb2bd730b62c7375c8d8f8d9e2470f085ca8dc4ec626dc0332d5687"
+        }
+      ],
+      "homepage": "https://www.iana.org/time-zones",
+      "sourceInfo": "Source RPM: tzdata-2024a-5.fc40.src.rpm",
+      "licenseDeclared": "LicenseRef-Fedora-Public-Domain AND (GPL-2.0-only WITH ClassPath-exception-2.0)",
+      "summary": "Timezone data",
+      "description": "This package contains data files with rules for various timezones around\nthe world.",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:rpm/fedora%20project/tzdata@2024a-5.fc40?arch=noarch&repository_url=https://mirror.karneval.cz/pub/linux/fedora/linux/updates/40/Everything/x86_64"
+        }
+      ],
+      "builtDate": "2024-04-09T02:59:59Z"
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-356f4620-c03e-3830-b013-ddbfee6665aa"
+    },
+    {
+      "spdxElementId": "SPDXRef-356f4620-c03e-3830-b013-ddbfee6665aa",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-8d8a3c7a-b77b-39f0-a2e0-13b29f7e0614"
+    },
+    {
+      "spdxElementId": "SPDXRef-356f4620-c03e-3830-b013-ddbfee6665aa",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-aa6b5f34-5db8-3257-8a59-5b9ed1f88967"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-79a9433e-3586-3ab4-9fad-58da4803b03d"
+    },
+    {
+      "spdxElementId": "SPDXRef-79a9433e-3586-3ab4-9fad-58da4803b03d",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-40bd79f4-044c-3f48-8c3e-4f44d5f98421"
+    },
+    {
+      "spdxElementId": "SPDXRef-79a9433e-3586-3ab4-9fad-58da4803b03d",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-8d8a3c7a-b77b-39f0-a2e0-13b29f7e0614"
+    },
+    {
+      "spdxElementId": "SPDXRef-79a9433e-3586-3ab4-9fad-58da4803b03d",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-a7c374d5-79fc-3408-8978-8e9dc67f1bcf"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-8d8a3c7a-b77b-39f0-a2e0-13b29f7e0614"
+    },
+    {
+      "spdxElementId": "SPDXRef-8d8a3c7a-b77b-39f0-a2e0-13b29f7e0614",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-aa6b5f34-5db8-3257-8a59-5b9ed1f88967"
+    },
+    {
+      "spdxElementId": "SPDXRef-aa6b5f34-5db8-3257-8a59-5b9ed1f88967",
+      "relationshipType": "OPTIONAL_DEPENDENCY_OF",
+      "relatedSpdxElement": "SPDXRef-8d8a3c7a-b77b-39f0-a2e0-13b29f7e0614"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-4a2934eb-3b95-38ea-a914-1caf4af642cb"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-a7c374d5-79fc-3408-8978-8e9dc67f1bcf"
+    },
+    {
+      "spdxElementId": "SPDXRef-a7c374d5-79fc-3408-8978-8e9dc67f1bcf",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-40bd79f4-044c-3f48-8c3e-4f44d5f98421"
+    },
+    {
+      "spdxElementId": "SPDXRef-a7c374d5-79fc-3408-8978-8e9dc67f1bcf",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-4a2934eb-3b95-38ea-a914-1caf4af642cb"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-aa6b5f34-5db8-3257-8a59-5b9ed1f88967"
+    },
+    {
+      "spdxElementId": "SPDXRef-aa6b5f34-5db8-3257-8a59-5b9ed1f88967",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-6171219d-d37a-3bde-966d-b18838faf379"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-bf9f71bd-837a-3d84-96d5-b8dcb026d1a4"
+    },
+    {
+      "spdxElementId": "SPDXRef-bf9f71bd-837a-3d84-96d5-b8dcb026d1a4",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-8d8a3c7a-b77b-39f0-a2e0-13b29f7e0614"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-6171219d-d37a-3bde-966d-b18838faf379"
+    },
+    {
+      "spdxElementId": "SPDXRef-6171219d-d37a-3bde-966d-b18838faf379",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-4882f8f5-f771-3327-850b-e007b7908170"
+    },
+    {
+      "spdxElementId": "SPDXRef-130a2ae5-3cce-3c42-935b-7dfbd643704b",
+      "relationshipType": "OPTIONAL_DEPENDENCY_OF",
+      "relatedSpdxElement": "SPDXRef-6171219d-d37a-3bde-966d-b18838faf379"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-4882f8f5-f771-3327-850b-e007b7908170"
+    },
+    {
+      "spdxElementId": "SPDXRef-4882f8f5-f771-3327-850b-e007b7908170",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-130a2ae5-3cce-3c42-935b-7dfbd643704b"
+    },
+    {
+      "spdxElementId": "SPDXRef-4882f8f5-f771-3327-850b-e007b7908170",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-6171219d-d37a-3bde-966d-b18838faf379"
+    },
+    {
+      "spdxElementId": "SPDXRef-4882f8f5-f771-3327-850b-e007b7908170",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-f0a57c02-9227-3b8e-afb3-e1ff052c1fe6"
+    },
+    {
+      "spdxElementId": "SPDXRef-6171219d-d37a-3bde-966d-b18838faf379",
+      "relationshipType": "OPTIONAL_DEPENDENCY_OF",
+      "relatedSpdxElement": "SPDXRef-4882f8f5-f771-3327-850b-e007b7908170"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-130a2ae5-3cce-3c42-935b-7dfbd643704b"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-f0a57c02-9227-3b8e-afb3-e1ff052c1fe6"
+    },
+    {
+      "spdxElementId": "SPDXRef-f0a57c02-9227-3b8e-afb3-e1ff052c1fe6",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-6171219d-d37a-3bde-966d-b18838faf379"
+    },
+    {
+      "spdxElementId": "SPDXRef-f0a57c02-9227-3b8e-afb3-e1ff052c1fe6",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-bf9f71bd-837a-3d84-96d5-b8dcb026d1a4"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-40bd79f4-044c-3f48-8c3e-4f44d5f98421"
+    },
+    {
+      "spdxElementId": "SPDXRef-40bd79f4-044c-3f48-8c3e-4f44d5f98421",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-356f4620-c03e-3830-b013-ddbfee6665aa"
+    },
+    {
+      "spdxElementId": "SPDXRef-40bd79f4-044c-3f48-8c3e-4f44d5f98421",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-5031d108-936f-3d7e-9258-5688aa081879"
+    },
+    {
+      "spdxElementId": "SPDXRef-40bd79f4-044c-3f48-8c3e-4f44d5f98421",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-5ff5f6cf-8999-3464-945d-dad61d430b10"
+    },
+    {
+      "spdxElementId": "SPDXRef-40bd79f4-044c-3f48-8c3e-4f44d5f98421",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-effc18c2-565b-3651-9281-ebbdcdf42288"
+    },
+    {
+      "spdxElementId": "SPDXRef-0eb0872f-8d70-3b13-81c0-ed95f54012ac",
+      "relationshipType": "OPTIONAL_DEPENDENCY_OF",
+      "relatedSpdxElement": "SPDXRef-40bd79f4-044c-3f48-8c3e-4f44d5f98421"
+    },
+    {
+      "spdxElementId": "SPDXRef-5031d108-936f-3d7e-9258-5688aa081879",
+      "relationshipType": "OPTIONAL_DEPENDENCY_OF",
+      "relatedSpdxElement": "SPDXRef-40bd79f4-044c-3f48-8c3e-4f44d5f98421"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-effc18c2-565b-3651-9281-ebbdcdf42288"
+    },
+    {
+      "spdxElementId": "SPDXRef-effc18c2-565b-3651-9281-ebbdcdf42288",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-40bd79f4-044c-3f48-8c3e-4f44d5f98421"
+    },
+    {
+      "spdxElementId": "SPDXRef-effc18c2-565b-3651-9281-ebbdcdf42288",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-79a9433e-3586-3ab4-9fad-58da4803b03d"
+    },
+    {
+      "spdxElementId": "SPDXRef-1acb9e3b-62d3-3dd1-950c-cc95038aaccb",
+      "relationshipType": "OPTIONAL_DEPENDENCY_OF",
+      "relatedSpdxElement": "SPDXRef-effc18c2-565b-3651-9281-ebbdcdf42288"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-0eb0872f-8d70-3b13-81c0-ed95f54012ac"
+    },
+    {
+      "spdxElementId": "SPDXRef-0eb0872f-8d70-3b13-81c0-ed95f54012ac",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-40bd79f4-044c-3f48-8c3e-4f44d5f98421"
+    },
+    {
+      "spdxElementId": "SPDXRef-0eb0872f-8d70-3b13-81c0-ed95f54012ac",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-effc18c2-565b-3651-9281-ebbdcdf42288"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-5031d108-936f-3d7e-9258-5688aa081879"
+    },
+    {
+      "spdxElementId": "SPDXRef-5031d108-936f-3d7e-9258-5688aa081879",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-40bd79f4-044c-3f48-8c3e-4f44d5f98421"
+    },
+    {
+      "spdxElementId": "SPDXRef-5031d108-936f-3d7e-9258-5688aa081879",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-effc18c2-565b-3651-9281-ebbdcdf42288"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-5ff5f6cf-8999-3464-945d-dad61d430b10"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-1acb9e3b-62d3-3dd1-950c-cc95038aaccb"
+    }
+  ]
+}

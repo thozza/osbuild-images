@@ -36,7 +36,7 @@ func RunPlayground(img image.ImageKind, d distro.Distro, arch distro.Arch, repos
 
 	packageSpecs := make(map[string][]rpmmd.PackageSpec)
 	for name, chain := range manifest.GetPackageSetChains() {
-		packages, _, err := solver.Depsolve(chain)
+		packages, _, _, err := solver.Depsolve(chain, false)
 		if err != nil {
 			panic(fmt.Sprintf("failed to depsolve for pipeline %s: %s\n", name, err.Error()))
 		}

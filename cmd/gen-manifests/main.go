@@ -357,7 +357,7 @@ func depsolve(cacheDir string, packageSets map[string][]rpmmd.PackageSet, d dist
 	depsolvedSets := make(map[string][]rpmmd.PackageSpec)
 	repoSets := make(map[string][]rpmmd.RepoConfig)
 	for name, pkgSet := range packageSets {
-		packages, repos, err := solver.Depsolve(pkgSet)
+		packages, repos, _, err := solver.Depsolve(pkgSet, false)
 		if err != nil {
 			return nil, nil, err
 		}

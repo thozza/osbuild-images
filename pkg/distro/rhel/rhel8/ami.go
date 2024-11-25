@@ -11,9 +11,9 @@ import (
 )
 
 const (
-	amiX86KernelOptions     = "console=tty0 console=ttyS0,115200n8 net.ifnames=0 rd.blacklist=nouveau nvme_core.io_timeout=4294967295 crashkernel=auto"
-	amiAarch64KernelOptions = "console=tty0 console=ttyS0,115200n8 net.ifnames=0 rd.blacklist=nouveau nvme_core.io_timeout=4294967295 iommu.strict=0 crashkernel=auto"
-	amiSapKernelOptions     = "console=tty0 console=ttyS0,115200n8 net.ifnames=0 rd.blacklist=nouveau nvme_core.io_timeout=4294967295 crashkernel=auto processor.max_cstate=1 intel_idle.max_cstate=1"
+	amiKernelOptions        = "console=tty0 console=ttyS0,115200n8 net.ifnames=0 rd.blacklist=nouveau nvme_core.io_timeout=4294967295 crashkernel=auto"
+	amiAarch64KernelOptions = amiKernelOptions + " iommu.strict=0"
+	amiSapKernelOptions     = amiKernelOptions + " processor.max_cstate=1 intel_idle.max_cstate=1"
 )
 
 func mkAmiImgTypeX86_64() *rhel.ImageType {
@@ -31,7 +31,7 @@ func mkAmiImgTypeX86_64() *rhel.ImageType {
 	)
 
 	it.DefaultImageConfig = defaultAMIImageConfigX86_64()
-	it.KernelOptions = amiX86KernelOptions
+	it.KernelOptions = amiKernelOptions
 	it.Bootable = true
 	it.DefaultSize = 10 * datasizes.GibiByte
 	it.BasePartitionTables = ec2PartitionTables
@@ -55,7 +55,7 @@ func mkEc2ImgTypeX86_64(rd *rhel.Distribution) *rhel.ImageType {
 
 	it.Compression = "xz"
 	it.DefaultImageConfig = defaultEc2ImageConfigX86_64(rd)
-	it.KernelOptions = amiX86KernelOptions
+	it.KernelOptions = amiKernelOptions
 	it.Bootable = true
 	it.DefaultSize = 10 * datasizes.GibiByte
 	it.BasePartitionTables = ec2PartitionTables
@@ -79,7 +79,7 @@ func mkEc2HaImgTypeX86_64(rd *rhel.Distribution) *rhel.ImageType {
 
 	it.Compression = "xz"
 	it.DefaultImageConfig = defaultEc2ImageConfigX86_64(rd)
-	it.KernelOptions = amiX86KernelOptions
+	it.KernelOptions = amiKernelOptions
 	it.Bootable = true
 	it.DefaultSize = 10 * datasizes.GibiByte
 	it.BasePartitionTables = ec2PartitionTables

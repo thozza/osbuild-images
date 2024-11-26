@@ -138,7 +138,7 @@ func SapPackageSet(t *rhel.ImageType) rpmmd.PackageSet {
 			"cairo",
 			"expect",
 			"graphviz",
-			//"gtk2", not available in RHEL 10
+			"gtk3", // gtk2 is not available in RHEL-10
 			"iptraf-ng",
 			"krb5-workstation",
 			"libaio",

@@ -4,6 +4,10 @@ import (
 	"io"
 )
 
+type UploadResult interface {
+	IsUploadResult()
+}
+
 // Uploader is an interface that is returned from the actual
 // cloud implementation. The uploader will be parameterized
 // by the actual cloud implemntation, e.g.
@@ -20,5 +24,5 @@ type Uploader interface {
 	// the reader and write status message to the given
 	// status writer.
 	// To implement progress a proxy reader can be used.
-	UploadAndRegister(f io.Reader, status io.Writer) error
+	UploadAndRegister(f io.Reader, status io.Writer) (UploadResult, error)
 }

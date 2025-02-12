@@ -27,6 +27,15 @@ type awsUploader struct {
 	bootMode   *string
 }
 
+type AWSUploadResult struct {
+	AMI    string
+	Region string
+}
+
+func (r *AWSUploadResult) IsUploadResult() {}
+
+var _ cloud.UploadResult = &AWSUploadResult{}
+
 type UploaderOptions struct {
 	TargetArch string
 	// BootMode to set for the AMI. If nil, no explicit boot mode will be set.
@@ -121,13 +130,13 @@ func (au *awsUploader) Check(status io.Writer) error {
 	return nil
 }
 
-func (au *awsUploader) UploadAndRegister(r io.Reader, status io.Writer) (err error) {
+func (au *awsUploader) UploadAndRegister(r io.Reader, status io.Writer) (cloud.UploadResult, error) {
 	keyName := fmt.Sprintf("%s-%s", uuid.New().String(), au.imageName)
 	fmt.Fprintf(status, "Uploading %s to %s:%s\n", au.imageName, au.bucketName, keyName)
 
 	res, err := au.client.UploadFromReader(r, au.bucketName, keyName)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer func() {
 		if err != nil {
@@ -144,17 +153,20 @@ func (au *awsUploader) UploadAndRegister(r io.Reader, status io.Writer) (err err
 	fmt.Fprintf(status, "Registering AMI %s\n", au.imageName)
 	ami, snapshot, err := au.client.Register(au.imageName, au.bucketName, keyName, nil, au.targetArch, au.bootMode, nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	fmt.Fprintf(status, "Deleted S3 object %s:%s\n", au.bucketName, keyName)
 	if err := au.client.DeleteObject(au.bucketName, keyName); err != nil {
-		return err
+		return nil, err
 	}
 	fmt.Fprintf(status, "AMI registered: %s\nSnapshot ID: %s\n", aws.StringValue(ami), aws.StringValue(snapshot))
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &AWSUploadResult{
+		AMI:    aws.StringValue(ami),
+		Region: au.region,
+	}, nil
 }

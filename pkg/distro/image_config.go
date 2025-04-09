@@ -5,6 +5,7 @@ import (
 	"reflect"
 
 	"github.com/osbuild/images/internal/common"
+	"github.com/osbuild/images/pkg/container"
 	"github.com/osbuild/images/pkg/customizations/fsnode"
 	"github.com/osbuild/images/pkg/customizations/shell"
 	"github.com/osbuild/images/pkg/customizations/subscription"
@@ -113,6 +114,16 @@ type ImageConfig struct {
 	// MountUnits creates systemd .mount units to describe the filesystem
 	// instead of writing to /etc/fstab
 	MountUnits *bool
+
+	// Configure the default network backend for containers, specifically
+	// for Podman. The specified value will be written to /var/lib/containers/storage/defaultNetworkBackend
+	// in the image, only if the image embeds a container image.
+	//
+	// Some versions of Podman will fall back to 'cni' if they find existing
+	// container images in the system container storage, for backward compatibility.
+	// Setting this option is useful to avoid this behavior and force podman to
+	// use the specified network backend instead.
+	ContainersDefaultNetBackend *container.NetworkBackend `yaml:"containers_default_net_backend,omitempty"`
 }
 
 type WSLConfig struct {

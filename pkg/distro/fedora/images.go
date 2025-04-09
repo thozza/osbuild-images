@@ -58,6 +58,12 @@ func osCustomizations(
 
 	osc.Containers = containers
 
+	if len(containers) > 0 && imageConfig.ContainersDefaultNetBackend != nil {
+		defaultNetBackendFile := common.Must(
+			container.GenDefaultNetworkBackendFile(imageConfig.ContainersDefaultNetBackend))
+		osc.Files = append(osc.Files, defaultNetBackendFile)
+	}
+
 	osc.GPGKeyFiles = imageConfig.GPGKeyFiles
 	if rpm := c.GetRPM(); rpm != nil && rpm.ImportKeys != nil {
 		osc.GPGKeyFiles = append(osc.GPGKeyFiles, rpm.ImportKeys.Files...)

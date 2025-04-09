@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 
+	"github.com/osbuild/images/internal/common"
 	"github.com/osbuild/images/internal/workload"
 	"github.com/osbuild/images/pkg/arch"
 	"github.com/osbuild/images/pkg/blueprint"
@@ -59,6 +60,12 @@ func osCustomizations(
 	osc.ExtraBaseRepos = osPackageSet.Repositories
 
 	osc.Containers = containers
+
+	if len(containers) > 0 && imageConfig.ContainersDefaultNetBackend != nil {
+		defaultNetBackendFile := common.Must(
+			container.GenDefaultNetworkBackendFile(imageConfig.ContainersDefaultNetBackend))
+		osc.Files = append(osc.Files, defaultNetBackendFile)
+	}
 
 	osc.GPGKeyFiles = imageConfig.GPGKeyFiles
 	if rpm := c.GetRPM(); rpm != nil && rpm.ImportKeys != nil {

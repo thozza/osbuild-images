@@ -70,6 +70,17 @@ def get_argparser():
         help="Download the built image files from the cache. " +
              "These are not downloaded by default because of their size.",
     )
+    parser.add_argument(
+        "--gen-manifests-in-container-img", type=str, metavar="IMAGE",
+        help="Container image to use for generating the manifests. " +
+             "If not provided, the script will generate the manifests on the host system.",
+    )
+    parser.add_argument(
+        "--before-cmd", action="extend", metavar="CMD", nargs="+",
+        help="Command to run before generating the manifests in the container. " +
+             "Can be specified multiple times. The command is run inside the container." +
+             "This is useful for installing additional tools or dependencies in the container.",
+    )
 
     return parser
 
@@ -127,7 +138,10 @@ def main():
 
     with tempfile.TemporaryDirectory() as tmpdir:
         print("📜 Generating current manifests to determine their IDs")
-        _ = testlib.gen_manifests(tmpdir, arches=args.arch, distros=args.distro, images=args.image_type)
+        _ = testlib.gen_manifests(
+                tmpdir, arches=args.arch, distros=args.distro, images=args.image_type,
+                container_img=args.gen_manifests_in_container_img, before_cmd=args.before_cmd
+            )
         manifest_gen_data = testlib.read_manifests(tmpdir)
 
     build_cache_infos = gen_manifest_data_to_build_cache_info(manifest_gen_data, args.config, args.skip_image_type)

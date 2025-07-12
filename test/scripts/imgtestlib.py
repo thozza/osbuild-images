@@ -1,9 +1,11 @@
 import argparse
+import contextlib
 import json
 import os
 import pathlib
 import subprocess as sp
 import sys
+from datetime import datetime
 from glob import glob
 from typing import Dict, List, Optional
 
@@ -231,28 +233,99 @@ def check_config_names():
         sys.exit(1)
 
 
+@contextlib.contextmanager
+def gen_manifests_cmd(outputdir, cachedir, extra_args=None, container_img=None, before_cmd=None):
+    """
+    Context manager to get the command to generate manifests.
+
+    If 'container_img' is specified, the comand will be use the container image to run the generation command.
+
+    If 'before_cmd' is specified, it will be run before the generation command inside the container. This is useful
+    for setting up the environment, e.g. to install dependencies. The option is ignored if 'container_img' is not
+    specified.
+    """
+    if not container_img:
+        cmd = [
+            "go", "run", "./cmd/gen-manifests",
+            "--cache", cachedir,
+            "--output", outputdir,
+            "--workers", "100"
+        ]
+        if extra_args:
+            cmd.extend(extra_args)
+        print("⌨️ " + " ".join(cmd))
+        yield cmd
+        return
+
+    now = datetime.now().strftime("%Y%m%d-%H%M%S")
+    container_name = f"gen-manifests-container-{now}"
+    print(f"Pulling container image '{container_img}'")
+    sp.run(["podman", "pull", container_img], check=True)
+
+    try:
+        dummy_container_cmd = [
+            "podman", "run", "-d", "--rm", "--name", container_name,
+            "-v", f"{outputdir}:/output:Z",
+            "-v", f"{cachedir}:/cache:Z",
+            "-v", f"{os.getcwd()}:/workdir:Z",
+            "--entrypoint", "/usr/bin/bash",
+            container_img,
+            "-c", "trap 'exit' TERM; while true; do sleep 1; done"
+        ]
+        sp.run(dummy_container_cmd, check=True)
+
+        for before_cmd_part in before_cmd or []:
+            print(f"Running before command in the container: {before_cmd_part}")
+            sp.run(["podman", "exec", "--env", "*", container_name, *before_cmd_part.split()], check=True)
+
+        gen_manifests_cmd = [
+            "go", "run", "./cmd/gen-manifests",
+            "--cache", "/cache",
+            "--output", "/output",
+            "--workers", "100"
+        ]
+        if extra_args:
+            gen_manifests_cmd.extend(extra_args)
+
+        yeld_cmd = [
+            "podman", "exec",
+            "--workdir", "workdir",
+            "--env", "*",
+            container_name,
+            *gen_manifests_cmd
+        ]
+        print("⌨️ " + " ".join(yeld_cmd))
+        yield yeld_cmd
+
+    finally:
+        sp.run(["podman", "rm", "-f", container_name], check=False)
+
+
 def gen_manifests(outputdir, config_map=None, distros=None, arches=None, images=None,
-                  commits=False, skip_no_config=False):
+                  commits=False, skip_no_config=False, container_img=None, before_cmd=None):
     # pylint: disable=too-many-arguments,too-many-positional-arguments
-    cmd = ["go", "run", "./cmd/gen-manifests",
-           "--cache", os.path.join(TEST_CACHE_ROOT, "rpmmd"),
-           "--output", outputdir,
-           "--workers", "100"]
+
+    cachedir = os.path.join(TEST_CACHE_ROOT, "rpmmd")
+    os.makedirs(cachedir, exist_ok=True)
+
+    extra_args = []
     if config_map:
-        cmd.extend(["--config-map", config_map])
+        extra_args.extend(["--config-map", config_map])
     if distros:
-        cmd.extend(["--distros", ",".join(distros)])
+        extra_args.extend(["--distros", ",".join(distros)])
     if arches:
-        cmd.extend(["--arches", ",".join(arches)])
+        extra_args.extend(["--arches", ",".join(arches)])
     if images:
-        cmd.extend(["--types", ",".join(images)])
+        extra_args.extend(["--types", ",".join(images)])
     if commits:
-        cmd.append("--commits")
+        extra_args.append("--commits")
     if skip_no_config:
-        cmd.append("--skip-noconfig")
-    print("⌨️" + " ".join(cmd))
-    _, stderr = runcmd(cmd, extra_env=rng_seed_env())
-    return stderr
+        extra_args.append("--skip-noconfig")
+
+    with gen_manifests_cmd(
+            outputdir, cachedir, extra_args=extra_args, container_img=container_img, before_cmd=before_cmd) as cmd:
+        _, stderr = runcmd(cmd, extra_env=rng_seed_env())
+        return stderr
 
 
 def read_manifests(path):

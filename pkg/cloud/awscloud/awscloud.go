@@ -12,21 +12,20 @@ import (
 
 	"slices"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
-	credentialsv2 "github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/credentials"
 	s3manager "github.com/aws/aws-sdk-go-v2/feature/s3/manager"
+	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	s3types "github.com/aws/aws-sdk-go-v2/service/s3/types"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/osbuild/images/pkg/olog"
 )
 
 type AWS struct {
-	ec2        *ec2.EC2
+	ec2        EC2
 	s3         S3
 	s3uploader S3Uploader
 	s3presign  S3Presign
@@ -42,46 +41,28 @@ var S3PermissionsMatrix = map[s3types.Permission][]s3types.Permission{
 }
 
 // Create a new session from the credentials and the region and returns an *AWS object initialized with it.
-func newAwsFromCreds(creds *credentials.Credentials, region string) (*AWS, error) {
-	// Create a Session with a custom region
-	sess, err := session.NewSession(&aws.Config{
-		Credentials: creds,
-		Region:      aws.String(region),
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	credsValue, err := creds.Get()
-	if err != nil {
-		return nil, err
-	}
-	cfg, err := config.LoadDefaultConfig(
-		context.Background(),
-		config.WithRegion(region),
-		config.WithCredentialsProvider(credentialsv2.NewStaticCredentialsProvider(
-			credsValue.AccessKeyID,
-			credsValue.SecretAccessKey,
-			credsValue.SessionToken,
-		)),
-	)
-	if err != nil {
-		return nil, err
-	}
-
+func newAwsFromConfig(cfg aws.Config) *AWS {
 	s3cli := s3.NewFromConfig(cfg)
-
 	return &AWS{
-		ec2:        ec2.New(sess),
+		ec2:        ec2.NewFromConfig(cfg),
 		s3:         s3cli,
 		s3uploader: s3manager.NewUploader(s3cli),
 		s3presign:  s3.NewPresignClient(s3cli),
-	}, nil
+	}
 }
 
 // Initialize a new AWS object from individual bits. SessionToken is optional
 func New(region string, accessKeyID string, accessKey string, sessionToken string) (*AWS, error) {
-	return newAwsFromCreds(credentials.NewStaticCredentials(accessKeyID, accessKey, sessionToken), region)
+	cfg, err := config.LoadDefaultConfig(
+		context.Background(),
+		config.WithRegion(region),
+		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(accessKeyID, accessKey, sessionToken)),
+	)
+	if err != nil {
+		return nil, err
+	}
+	aws := newAwsFromConfig(cfg)
+	return aws, nil
 }
 
 // Initializes a new AWS object with the credentials info found at filename's location.
@@ -94,39 +75,41 @@ func New(region string, accessKeyID string, accessKey string, sessionToken strin
 // "AWS_SHARED_CREDENTIALS_FILE" env variable or will default to
 // $HOME/.aws/credentials.
 func NewFromFile(filename string, region string) (*AWS, error) {
-	return newAwsFromCreds(credentials.NewSharedCredentials(filename, "default"), region)
+	cfg, err := config.LoadDefaultConfig(
+		context.Background(),
+		config.WithRegion(region),
+		config.WithSharedCredentialsFiles([]string{
+			filename,
+			"default",
+		}),
+	)
+	if err != nil {
+		return nil, err
+	}
+	aws := newAwsFromConfig(cfg)
+	return aws, nil
 }
 
 // Initialize a new AWS object from defaults.
 // Looks for env variables, shared credential file, and EC2 Instance Roles.
 func NewDefault(region string) (*AWS, error) {
-	return newAwsFromCreds(nil, region)
-}
-
-// Create a new session from the credentials and the region and returns an *AWS object initialized with it.
-func newAwsFromCredsWithEndpoint(creds *credentials.Credentials, region, endpoint, caBundle string, skipSSLVerification bool) (*AWS, error) {
-	// Create a Session with a custom region
-	s3ForcePathStyle := true
-	sessionOptions := session.Options{
-		Config: aws.Config{
-			Credentials:      creds,
-			Region:           aws.String(region),
-			Endpoint:         &endpoint,
-			S3ForcePathStyle: &s3ForcePathStyle,
-		},
-	}
-
-	credsValue, err := creds.Get()
+	cfg, err := config.LoadDefaultConfig(
+		context.Background(),
+		config.WithRegion(region),
+	)
 	if err != nil {
 		return nil, err
 	}
+	aws := newAwsFromConfig(cfg)
+	return aws, nil
+}
+
+// Create a new session from the credentials and the region and returns an *AWS object initialized with it.
+func newAwsFromCredsWithEndpoint(optsFunc config.LoadOptionsFunc, region, endpoint, caBundle string, skipSSLVerification bool) (*AWS, error) {
+	// Create a Session with a custom region
 	v2OptionFuncs := []func(*config.LoadOptions) error{
 		config.WithRegion(region),
-		config.WithCredentialsProvider(credentialsv2.NewStaticCredentialsProvider(
-			credsValue.AccessKeyID,
-			credsValue.SecretAccessKey,
-			credsValue.SessionToken,
-		)),
+		optsFunc,
 	}
 
 	if caBundle != "" {

@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	s3types "github.com/aws/aws-sdk-go-v2/service/s3/types"
+	"github.com/osbuild/images/pkg/cloud/awscloud"
 )
 
 type fakeS3Client struct {
@@ -25,6 +26,8 @@ type fakeS3Client struct {
 	bucketAcl         *s3.GetBucketAclOutput
 	getBucketAclErr   error
 }
+
+var _ awscloud.S3Client = (*fakeS3Client)(nil)
 
 func (f *fakeS3Client) DeleteObject(ctx context.Context, input *s3.DeleteObjectInput, optFns ...func(*s3.Options)) (*s3.DeleteObjectOutput, error) {
 	f.deleteObjectCalls = append(f.deleteObjectCalls, *input)
@@ -71,6 +74,8 @@ type fakeS3Uploader struct {
 	uploadErr   error
 }
 
+var _ awscloud.S3Uploader = (*fakeS3Uploader)(nil)
+
 func (f *fakeS3Uploader) Upload(ctx context.Context, input *s3.PutObjectInput, optFns ...func(*manager.Uploader)) (*manager.UploadOutput, error) {
 	f.uploadCalls = append(f.uploadCalls, *input)
 	if f.uploadErr != nil {
@@ -85,6 +90,8 @@ type fakeS3Presign struct {
 	presignGetObjectCalls []s3.GetObjectInput
 	presignGetObjectErr   error
 }
+
+var _ awscloud.S3Presign = (*fakeS3Presign)(nil)
 
 func (f *fakeS3Presign) PresignGetObject(ctx context.Context, input *s3.GetObjectInput, optFns ...func(*s3.PresignOptions)) (*v4.PresignedHTTPRequest, error) {
 	f.presignGetObjectCalls = append(f.presignGetObjectCalls, *input)

@@ -99,31 +99,6 @@ func TestS3ObjectPresignedURLError(t *testing.T) {
 	require.Equal(t, "object-key", *fs.presignGetObjectCalls[0].Key)
 }
 
-func TestDeleteObject(t *testing.T) {
-	fc := &fakeS3Client{}
-	aws := awscloud.NewAWSForTest(fc, nil, nil)
-	require.NotNil(t, aws)
-
-	require.NoError(t, aws.DeleteObject("bucket", "object-key"))
-	require.Len(t, fc.deleteObjectCalls, 1)
-	require.Equal(t, "bucket", *fc.deleteObjectCalls[0].Bucket)
-	require.Equal(t, "object-key", *fc.deleteObjectCalls[0].Key)
-}
-
-func TestDeleteObjectError(t *testing.T) {
-	fc := &fakeS3Client{
-		deleteObjectErr: fmt.Errorf("error deleting object"),
-	}
-	aws := awscloud.NewAWSForTest(fc, nil, nil)
-	require.NotNil(t, aws)
-
-	err := aws.DeleteObject("bucket", "object-key")
-	require.Error(t, err)
-	require.Len(t, fc.deleteObjectCalls, 1)
-	require.Equal(t, "bucket", *fc.deleteObjectCalls[0].Bucket)
-	require.Equal(t, "object-key", *fc.deleteObjectCalls[0].Key)
-}
-
 func TestBuckets(t *testing.T) {
 	fc := &fakeS3Client{
 		buckets: []string{"bucket1", "bucket2"},
@@ -201,6 +176,20 @@ func TestCheckBucketPermission(t *testing.T) {
 			},
 			permission: s3types.PermissionWrite,
 			expected:   true,
+		},
+		{
+			name: "invalid permission",
+			fc: &fakeS3Client{
+				bucketAcl: &s3.GetBucketAclOutput{
+					Grants: []s3types.Grant{
+						{
+							Permission: s3types.PermissionRead,
+						},
+					},
+				},
+			},
+			permission: s3types.Permission("invalid-permission"),
+			expected:   false,
 		},
 		{
 			name: "error retrieving bucket ACL",

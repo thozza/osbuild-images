@@ -17,6 +17,8 @@ import (
 	"github.com/osbuild/images/pkg/platform"
 )
 
+var _ awscloud.AwsClient = &awscloud.AWS{}
+
 // XXX: put into a new "cloudtest" package?
 type fakeAWSClient struct {
 	regions      []string

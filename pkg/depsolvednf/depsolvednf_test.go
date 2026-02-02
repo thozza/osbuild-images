@@ -95,9 +95,6 @@ func assertDepsolveResultV2(t *testing.T, pkgSets []rpmmd.PackageSet, actual Dep
 	require.Equal(t, 1, len(actual.Repos), "expected exactly 1 repo")
 	expectedPackages := expectedDepsolvedPackages(actual.Repos[0])
 
-	// Check Packages field (for backwards compat while Packages field exists)
-	assertExpectedPackages(t, pkgSets, expectedPackages, actual.Packages)
-
 	// V2 specific tests below
 
 	// Transaction count must match number of package sets
@@ -113,20 +110,14 @@ func assertDepsolveResultV2(t *testing.T, pkgSets []rpmmd.PackageSet, actual Dep
 	}
 
 	// Union of all Transactions must equal expected packages
-	allTransactionPkgs := make(rpmmd.PackageList, 0)
-	for _, transaction := range actual.Transactions {
-		allTransactionPkgs = append(allTransactionPkgs, transaction...)
-	}
-	sort.Slice(allTransactionPkgs, func(i, j int) bool {
-		return allTransactionPkgs[i].FullNEVRA() < allTransactionPkgs[j].FullNEVRA()
-	})
+	allTransactionPkgs := actual.Transactions.AllPackages()
 	require.Equal(t, len(expectedPackages), len(allTransactionPkgs), "transaction packages count mismatch")
 
 	// Check full metadata for all packages
 	for i := range expectedPackages {
 		// Check full metadata for bash package as a smoke test
 		if expectedPackages[i].Name == "bash" {
-			assert.Equal(t, expectedPackages[i], actual.Packages[i], "full bash metadata mismatch")
+			assert.Equal(t, expectedPackages[i], allTransactionPkgs[i], "full bash metadata mismatch")
 			continue
 		}
 
@@ -1113,7 +1104,6 @@ echo '{"solver": "zypper"}'
 
 			// adding the "solver" did not cause any issues
 			assert.NoError(t, err)
-			assert.Equal(t, 0, len(res.Packages))
 			assert.Equal(t, 0, len(res.Repos))
 		})
 	}

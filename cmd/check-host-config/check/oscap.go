@@ -11,6 +11,7 @@ import (
 
 	"github.com/gocomply/scap/pkg/scap/models/cdf"
 	"github.com/osbuild/image-builder/internal/buildconfig"
+	"gopkg.in/yaml.v3"
 )
 
 // ignoredSeverityRules is a list of rule IDs that are ignored by the OpenSCAP check.
@@ -18,12 +19,47 @@ var ignoredSeverityRules = []string{
 	"xccdf_org.ssgproject.content_rule_ensure_redhat_gpgkey_installed", // requires rhsm subscription
 }
 
+type OscapCheckParams struct {
+	DataStream string `yaml:"datastream,omitempty"`
+	ProfileID  string `yaml:"profile_id"`
+}
+
+func oscapFromYAML(node *yaml.Node) (CheckParams, error) {
+	var p OscapCheckParams
+	if err := node.Decode(&p); err != nil {
+		return nil, err
+	}
+	if p.ProfileID == "" {
+		return nil, fmt.Errorf("'profile_id' must not be empty")
+	}
+	return p, nil
+}
+
 func init() {
-	RegisterCheck(Metadata{
-		Name:                   "oscap",
-		RequiresBlueprint:      true,
-		RequiresCustomizations: true,
-	}, openSCAPCheck)
+	RegisterCheckWithParams(RegisteredCheck{
+		Meta: &Metadata{
+			Name:                   "oscap",
+			RequiresBlueprint:      true,
+			RequiresCustomizations: true,
+		},
+		ParamFunc:       openSCAPCheck,
+		FromBuildConfig: oscapFromConfig,
+		FromYAML:        oscapFromYAML,
+	})
+}
+
+func oscapFromConfig(c *buildconfig.BuildConfig) (CheckParams, error) {
+	if c == nil || c.Blueprint == nil || c.Blueprint.Customizations == nil {
+		return nil, nil
+	}
+	oscap := c.Blueprint.Customizations.OpenSCAP
+	if oscap == nil {
+		return nil, nil
+	}
+	return OscapCheckParams{
+		DataStream: oscap.DataStream,
+		ProfileID:  oscap.ProfileID,
+	}, nil
 }
 
 // GetDatastreamFilename returns the full OpenSCAP datastream path based on OSRelease.
@@ -104,10 +140,10 @@ func parseOSCAPResults(filename string) (score string, failedHighSeverityRules [
 	return score, failedHighSeverityRules, nil
 }
 
-func openSCAPCheck(meta *Metadata, config *buildconfig.BuildConfig) error {
-	oscap := config.Blueprint.Customizations.OpenSCAP
-	if oscap == nil {
-		return Skip("no OpenSCAP customization")
+func openSCAPCheck(meta *Metadata, params CheckParams) error {
+	p, ok := params.(OscapCheckParams)
+	if !ok {
+		return Fail("invalid params type")
 	}
 
 	osRelease, err := ParseOSRelease("/etc/os-release")
@@ -120,8 +156,8 @@ func openSCAPCheck(meta *Metadata, config *buildconfig.BuildConfig) error {
 	}
 
 	baselineScore := 0.8
-	profile := oscap.ProfileID
-	datastream := oscap.DataStream
+	profile := p.ProfileID
+	datastream := p.DataStream
 
 	if profile == "" {
 		return Skip("incomplete OpenSCAP configuration")

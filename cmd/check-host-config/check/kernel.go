@@ -5,43 +5,73 @@ import (
 	"strings"
 
 	"github.com/osbuild/image-builder/internal/buildconfig"
+	"gopkg.in/yaml.v3"
 )
 
-func init() {
-	RegisterCheck(Metadata{
-		Name:                   "kernel",
-		RequiresBlueprint:      true,
-		RequiresCustomizations: true,
-		TempDisabled:           "https://github.com/osbuild/image-builder/pull/2175",
-	}, kernelCheck)
+type KernelCheckParams struct {
+	Name   string `yaml:"name,omitempty"`
+	Append string `yaml:"append,omitempty"`
 }
 
-func kernelCheck(meta *Metadata, config *buildconfig.BuildConfig) error {
-	expected := config.Blueprint.Customizations.Kernel
-	if expected == nil {
-		return Skip("no kernel to check")
+func kernelFromYAML(node *yaml.Node) (CheckParams, error) {
+	var p KernelCheckParams
+	if err := node.Decode(&p); err != nil {
+		return nil, err
+	}
+	return p, nil
+}
+
+func init() {
+	RegisterCheckWithParams(RegisteredCheck{
+		Meta: &Metadata{
+			Name:                   "kernel",
+			RequiresBlueprint:      true,
+			RequiresCustomizations: true,
+			TempDisabled:           "https://github.com/osbuild/image-builder/pull/2175",
+		},
+		ParamFunc:       kernelCheck,
+		FromBuildConfig: kernelFromConfig,
+		FromYAML:        kernelFromYAML,
+	})
+}
+
+func kernelFromConfig(c *buildconfig.BuildConfig) (CheckParams, error) {
+	if c == nil || c.Blueprint == nil || c.Blueprint.Customizations == nil {
+		return nil, nil
+	}
+	k := c.Blueprint.Customizations.Kernel
+	if k == nil {
+		return nil, nil
+	}
+	return KernelCheckParams{Name: k.Name, Append: k.Append}, nil
+}
+
+func kernelCheck(meta *Metadata, params CheckParams) error {
+	p, ok := params.(KernelCheckParams)
+	if !ok {
+		return Fail("invalid params type")
 	}
 
 	// Only query RPM for the kernel package provides. We do no test if the
 	// specific kernel is actually booted as the testing in container is not
 	// reliable.
-	if expected.Name != "" {
-		_, _, _, err := ExecString("rpm", "-q", "--provides", expected.Name)
+	if p.Name != "" {
+		_, _, _, err := ExecString("rpm", "-q", "--provides", p.Name)
 		if err != nil {
-			return Fail("kernel package not found:", expected.Name, "error:", err)
+			return Fail("kernel package not found:", p.Name, "error:", err)
 		}
 
-		log.Printf("Kernel name check passed: %s is installed\n", expected.Name)
+		log.Printf("Kernel name check passed: %s is installed\n", p.Name)
 	}
 
-	if len(expected.Append) > 0 {
+	if len(p.Append) > 0 {
 		cmdline, err := ReadFile("/proc/cmdline")
 		if err != nil {
 			return Fail("failed to read /proc/cmdline:", err)
 		}
 
-		if !strings.Contains(string(cmdline), expected.Append) {
-			return Fail("kernel options append does not match:", expected.Append)
+		if !strings.Contains(string(cmdline), p.Append) {
+			return Fail("kernel options append does not match:", p.Append)
 		}
 	}
 

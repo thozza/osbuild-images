@@ -1,47 +1,73 @@
 package check
 
 import (
+	"fmt"
 	"log"
 	"strings"
 
 	"github.com/osbuild/image-builder/internal/buildconfig"
+	"gopkg.in/yaml.v3"
 )
 
-func init() {
-	RegisterCheck(Metadata{
-		Name:              "modularity",
-		RequiresBlueprint: true,
-		RunOn:             []string{"centos-9"},
-	}, modularityCheck)
+type ModularityCheckParams struct {
+	Modules []string `yaml:"modules"`
 }
 
-func modularityCheck(meta *Metadata, config *buildconfig.BuildConfig) error {
+func modularityFromYAML(node *yaml.Node) (CheckParams, error) {
+	var p ModularityCheckParams
+	if err := node.Decode(&p); err != nil {
+		return nil, err
+	}
+	if len(p.Modules) == 0 {
+		return nil, fmt.Errorf("'modules' list must not be empty")
+	}
+	return p, nil
+}
+
+func init() {
+	RegisterCheckWithParams(RegisteredCheck{
+		Meta: &Metadata{
+			Name:              "modularity",
+			RequiresBlueprint: true,
+			RunOn:             []string{"centos-9"},
+		},
+		ParamFunc:       modularityCheck,
+		FromBuildConfig: modularityFromConfig,
+		FromYAML:        modularityFromYAML,
+	})
+}
+
+func modularityFromConfig(c *buildconfig.BuildConfig) (CheckParams, error) {
+	if c == nil || c.Blueprint == nil {
+		return nil, nil
+	}
+	var modules []string
+	for _, mod := range c.Blueprint.EnabledModules {
+		modules = append(modules, mod.Name+":"+mod.Stream)
+	}
+	for _, pkg := range c.Blueprint.Packages {
+		if strings.HasPrefix(pkg.Name, "@") && strings.Contains(pkg.Name, ":") {
+			moduleName := strings.TrimPrefix(pkg.Name, "@")
+			modules = append(modules, moduleName)
+		}
+	}
+	if len(modules) == 0 {
+		return nil, nil
+	}
+	return ModularityCheckParams{Modules: modules}, nil
+}
+
+func modularityCheck(meta *Metadata, params CheckParams) error {
+	p, ok := params.(ModularityCheckParams)
+	if !ok {
+		return Fail("invalid params type")
+	}
+
 	// Verify modules that are enabled on a system, if any. Modules can either be enabled separately
 	// or they can be installed through packages directly. We test both cases here.
 	//
 	// Caveat is that when a module is enabled yet _no_ packages are installed from it this breaks.
 	// Let's not do that in the test?
-
-	// Collect expected modules from enabled_modules and packages
-	var expectedModules []string
-
-	// From enabled_modules
-	for _, mod := range config.Blueprint.EnabledModules {
-		expectedModules = append(expectedModules, mod.Name+":"+mod.Stream)
-	}
-
-	// From packages that start with @ and contain :
-	for _, pkg := range config.Blueprint.Packages {
-		if strings.HasPrefix(pkg.Name, "@") && strings.Contains(pkg.Name, ":") {
-			// Remove @ prefix
-			moduleName := strings.TrimPrefix(pkg.Name, "@")
-			expectedModules = append(expectedModules, moduleName)
-		}
-	}
-
-	if len(expectedModules) == 0 {
-		return Skip("no modules to check")
-	}
 
 	log.Println("Checking enabled modules")
 
@@ -70,7 +96,7 @@ func modularityCheck(meta *Metadata, config *buildconfig.BuildConfig) error {
 		return Fail("dnf module list returned nothing")
 	}
 
-	for _, expected := range expectedModules {
+	for _, expected := range p.Modules {
 		if !enabledModules[expected] {
 			return Fail("module was not enabled:", expected)
 		}

@@ -3,29 +3,61 @@ package check
 import (
 	"crypto/x509"
 	"encoding/pem"
+	"fmt"
 	"log"
 	"strings"
 
 	"github.com/osbuild/image-builder/internal/buildconfig"
+	"gopkg.in/yaml.v3"
 )
 
-func init() {
-	RegisterCheck(Metadata{
-		Name:                   "cacerts",
-		RequiresBlueprint:      true,
-		RequiresCustomizations: true,
-	}, cacertsCheck)
+type CaCertsCheckParams struct {
+	Certificates []string `yaml:"certificates"`
 }
 
-func cacertsCheck(meta *Metadata, config *buildconfig.BuildConfig) error {
-	cacerts := config.Blueprint.Customizations.CACerts
+func caCertsFromYAML(node *yaml.Node) (CheckParams, error) {
+	var p CaCertsCheckParams
+	if err := node.Decode(&p); err != nil {
+		return nil, err
+	}
+	if len(p.Certificates) == 0 {
+		return nil, fmt.Errorf("'certificates' list must not be empty")
+	}
+	return p, nil
+}
+
+func init() {
+	RegisterCheckWithParams(RegisteredCheck{
+		Meta: &Metadata{
+			Name:                   "cacerts",
+			RequiresBlueprint:      true,
+			RequiresCustomizations: true,
+		},
+		ParamFunc:       cacertsCheck,
+		FromBuildConfig: cacertsFromConfig,
+		FromYAML:        caCertsFromYAML,
+	})
+}
+
+func cacertsFromConfig(c *buildconfig.BuildConfig) (CheckParams, error) {
+	if c == nil || c.Blueprint == nil || c.Blueprint.Customizations == nil {
+		return nil, nil
+	}
+	cacerts := c.Blueprint.Customizations.CACerts
 	if cacerts == nil || len(cacerts.PEMCerts) == 0 {
-		return Skip("no CA certs to check")
+		return nil, nil
+	}
+	return CaCertsCheckParams{Certificates: cacerts.PEMCerts}, nil
+}
+
+func cacertsCheck(meta *Metadata, params CheckParams) error {
+	p, ok := params.(CaCertsCheckParams)
+	if !ok {
+		return Fail("invalid params type")
 	}
 
-	// Check all CA certs
 	checkedCount := 0
-	for i, pemCert := range cacerts.PEMCerts {
+	for i, pemCert := range p.Certificates {
 		if pemCert == "" {
 			log.Printf("Skipping empty CA cert at index %d\n", i)
 			continue

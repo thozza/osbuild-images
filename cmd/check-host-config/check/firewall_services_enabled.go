@@ -7,20 +7,36 @@ import (
 )
 
 func init() {
-	RegisterCheck(Metadata{
-		Name:                   "fw-srv-enabled",
-		RequiresBlueprint:      true,
-		RequiresCustomizations: true,
-	}, firewallServicesEnabledCheck)
+	RegisterCheckWithParams(RegisteredCheck{
+		Meta: &Metadata{
+			Name:                   "fw-srv-enabled",
+			RequiresBlueprint:      true,
+			RequiresCustomizations: true,
+		},
+		ParamFunc:       firewallServicesEnabledCheck,
+		FromBuildConfig: firewallServicesEnabledFromConfig,
+		FromYAML:        serviceListFromYAML,
+	})
 }
 
-func firewallServicesEnabledCheck(meta *Metadata, config *buildconfig.BuildConfig) error {
-	firewall := config.Blueprint.Customizations.Firewall
-	if firewall == nil || firewall.Services == nil || len(firewall.Services.Enabled) == 0 {
-		return Skip("no enabled firewall services to check")
+func firewallServicesEnabledFromConfig(c *buildconfig.BuildConfig) (CheckParams, error) {
+	if c == nil || c.Blueprint == nil || c.Blueprint.Customizations == nil {
+		return nil, nil
+	}
+	fw := c.Blueprint.Customizations.Firewall
+	if fw == nil || fw.Services == nil || len(fw.Services.Enabled) == 0 {
+		return nil, nil
+	}
+	return ServiceListParams{Services: fw.Services.Enabled}, nil
+}
+
+func firewallServicesEnabledCheck(meta *Metadata, params CheckParams) error {
+	p, ok := params.(ServiceListParams)
+	if !ok {
+		return Fail("invalid params type")
 	}
 
-	for _, service := range firewall.Services.Enabled {
+	for _, service := range p.Services {
 		log.Printf("Checking enabled firewall service: %s\n", service)
 		// NOTE: sudo works here without password because we test this only on ami
 		// initialised with cloud-init, which sets sudo NOPASSWD for the user

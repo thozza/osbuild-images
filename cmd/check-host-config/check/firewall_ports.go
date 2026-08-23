@@ -1,27 +1,60 @@
 package check
 
 import (
+	"fmt"
 	"log"
 	"strings"
 
 	"github.com/osbuild/image-builder/internal/buildconfig"
+	"gopkg.in/yaml.v3"
 )
 
-func init() {
-	RegisterCheck(Metadata{
-		Name:                   "fw-ports",
-		RequiresBlueprint:      true,
-		RequiresCustomizations: true,
-	}, firewallPortsCheck)
+type PortListParams struct {
+	Ports []string `yaml:"ports"`
 }
 
-func firewallPortsCheck(meta *Metadata, config *buildconfig.BuildConfig) error {
-	firewall := config.Blueprint.Customizations.Firewall
-	if firewall == nil || len(firewall.Ports) == 0 {
-		return Skip("no firewall ports to check")
+func portListFromYAML(node *yaml.Node) (CheckParams, error) {
+	var p PortListParams
+	if err := node.Decode(&p); err != nil {
+		return nil, err
+	}
+	if len(p.Ports) == 0 {
+		return nil, fmt.Errorf("'ports' list must not be empty")
+	}
+	return p, nil
+}
+
+func init() {
+	RegisterCheckWithParams(RegisteredCheck{
+		Meta: &Metadata{
+			Name:                   "fw-ports",
+			RequiresBlueprint:      true,
+			RequiresCustomizations: true,
+		},
+		ParamFunc:       firewallPortsCheck,
+		FromBuildConfig: firewallPortsFromConfig,
+		FromYAML:        portListFromYAML,
+	})
+}
+
+func firewallPortsFromConfig(c *buildconfig.BuildConfig) (CheckParams, error) {
+	if c == nil || c.Blueprint == nil || c.Blueprint.Customizations == nil {
+		return nil, nil
+	}
+	fw := c.Blueprint.Customizations.Firewall
+	if fw == nil || len(fw.Ports) == 0 {
+		return nil, nil
+	}
+	return PortListParams{Ports: fw.Ports}, nil
+}
+
+func firewallPortsCheck(meta *Metadata, params CheckParams) error {
+	p, ok := params.(PortListParams)
+	if !ok {
+		return Fail("invalid params type")
 	}
 
-	for _, port := range firewall.Ports {
+	for _, port := range p.Ports {
 		// firewall-cmd --query-port uses / as the port/protocol separator, but
 		// in the blueprint we use :.
 		portQuery := strings.ReplaceAll(port, ":", "/")

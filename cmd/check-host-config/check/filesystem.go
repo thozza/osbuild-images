@@ -7,15 +7,36 @@ import (
 	"strings"
 
 	"github.com/osbuild/image-builder/internal/buildconfig"
+	"gopkg.in/yaml.v3"
 )
 
+type FilesystemCheckParams struct {
+	Mountpoints []string `yaml:"mountpoints"`
+}
+
+func filesystemFromYAML(node *yaml.Node) (CheckParams, error) {
+	var p FilesystemCheckParams
+	if err := node.Decode(&p); err != nil {
+		return nil, err
+	}
+	if len(p.Mountpoints) == 0 {
+		return nil, fmt.Errorf("'mountpoints' list must not be empty")
+	}
+	return p, nil
+}
+
 func init() {
-	RegisterCheck(Metadata{
-		Name:                   "filesystem",
-		RequiresBlueprint:      true,
-		RequiresCustomizations: true,
-		RunOn:                  []string{"!rhel-8.4", "!rhel-8.6", "!rhel-8.8", "!rhel-8.10"},
-	}, filesystemCheck)
+	RegisterCheckWithParams(RegisteredCheck{
+		Meta: &Metadata{
+			Name:                   "filesystem",
+			RequiresBlueprint:      true,
+			RequiresCustomizations: true,
+			RunOn:                  []string{"!rhel-8.4", "!rhel-8.6", "!rhel-8.8", "!rhel-8.10"},
+		},
+		ParamFunc:       filesystemCheck,
+		FromBuildConfig: filesystemFromConfig,
+		FromYAML:        filesystemFromYAML,
+	})
 }
 
 // collectExpectedMountpoints gathers all mountpoints from both
@@ -58,6 +79,17 @@ func collectExpectedMountpoints(config *buildconfig.BuildConfig) []string {
 	}
 
 	return mountpoints
+}
+
+func filesystemFromConfig(c *buildconfig.BuildConfig) (CheckParams, error) {
+	if c == nil || c.Blueprint == nil || c.Blueprint.Customizations == nil {
+		return nil, nil
+	}
+	mountpoints := collectExpectedMountpoints(c)
+	if len(mountpoints) == 0 {
+		return nil, nil
+	}
+	return FilesystemCheckParams{Mountpoints: mountpoints}, nil
 }
 
 type lsblkOutput struct {
@@ -103,10 +135,10 @@ func getActiveMountpoints() (map[string]bool, error) {
 	return mounts, nil
 }
 
-func filesystemCheck(meta *Metadata, config *buildconfig.BuildConfig) error {
-	expected := collectExpectedMountpoints(config)
-	if len(expected) == 0 {
-		return Skip("no filesystem or disk customizations")
+func filesystemCheck(meta *Metadata, params CheckParams) error {
+	p, ok := params.(FilesystemCheckParams)
+	if !ok {
+		return Fail("invalid params type")
 	}
 
 	active, err := getActiveMountpoints()
@@ -115,7 +147,7 @@ func filesystemCheck(meta *Metadata, config *buildconfig.BuildConfig) error {
 	}
 
 	var missing []string
-	for _, mp := range expected {
+	for _, mp := range p.Mountpoints {
 		if active[mp] {
 			log.Printf("filesystem check: mountpoint %s is present\n", mp)
 		} else {

@@ -6,16 +6,48 @@ import (
 	"strings"
 
 	"github.com/osbuild/image-builder/internal/buildconfig"
+	"gopkg.in/yaml.v3"
 )
 
 const hostnameFilePath = "/etc/hostname"
 
+type HostnameCheckParams struct {
+	Expected string `yaml:"expected"`
+}
+
+func hostnameFromYAML(node *yaml.Node) (CheckParams, error) {
+	var p HostnameCheckParams
+	if err := node.Decode(&p); err != nil {
+		return nil, err
+	}
+	if p.Expected == "" {
+		return nil, fmt.Errorf("'expected' must not be empty")
+	}
+	return p, nil
+}
+
 func init() {
-	RegisterCheck(Metadata{
-		Name:                   "hostname",
-		RequiresBlueprint:      true,
-		RequiresCustomizations: true,
-	}, hostnameCheck)
+	RegisterCheckWithParams(RegisteredCheck{
+		Meta: &Metadata{
+			Name:                   "hostname",
+			RequiresBlueprint:      true,
+			RequiresCustomizations: true,
+		},
+		ParamFunc:       hostnameCheck,
+		FromBuildConfig: hostnameFromConfig,
+		FromYAML:        hostnameFromYAML,
+	})
+}
+
+func hostnameFromConfig(c *buildconfig.BuildConfig) (CheckParams, error) {
+	if c == nil || c.Blueprint == nil || c.Blueprint.Customizations == nil {
+		return nil, nil
+	}
+	expected := c.Blueprint.Customizations.Hostname
+	if expected == nil || *expected == "" {
+		return nil, nil
+	}
+	return HostnameCheckParams{Expected: *expected}, nil
 }
 
 var ErrHostname = errors.New("hostname")
@@ -42,10 +74,10 @@ func getHostname() (string, error) {
 	return "", fmt.Errorf("%w: could not get hostname: tried hostnamectl, hostname, and %s", ErrHostname, hostnameFilePath)
 }
 
-func hostnameCheck(meta *Metadata, config *buildconfig.BuildConfig) error {
-	expected := config.Blueprint.Customizations.Hostname
-	if expected == nil || *expected == "" {
-		return Skip("no hostname customization")
+func hostnameCheck(meta *Metadata, params CheckParams) error {
+	p, ok := params.(HostnameCheckParams)
+	if !ok {
+		return Fail("invalid params type")
 	}
 
 	hostname, err := getHostname()
@@ -55,8 +87,8 @@ func hostnameCheck(meta *Metadata, config *buildconfig.BuildConfig) error {
 
 	// we only emit a warning here since the hostname gets reset by cloud-init and we're not
 	// entirely sure how to deal with it yet on the service level
-	if hostname != *expected {
-		return Warning("hostname does not match, got", hostname, "expected", *expected)
+	if hostname != p.Expected {
+		return Warning("hostname does not match, got", hostname, "expected", p.Expected)
 	}
 
 	return Pass()

@@ -38,7 +38,7 @@ func init() {
 		Meta: &Metadata{
 			Name: "files",
 		},
-		Func:       filesCheck,
+		Func:            filesCheck,
 		FromBuildConfig: filesFromConfig,
 		FromYAML:        filesFromYAML,
 	})

@@ -30,7 +30,7 @@ func init() {
 			Name:  "modularity",
 			RunOn: []string{"centos-9"},
 		},
-		Func:       modularityCheck,
+		Func:            modularityCheck,
 		FromBuildConfig: modularityFromConfig,
 		FromYAML:        modularityFromYAML,
 	})

@@ -28,7 +28,7 @@ func init() {
 		Meta: &Metadata{
 			Name: "srv-enabled",
 		},
-		Func:       servicesEnabledCheck,
+		Func:            servicesEnabledCheck,
 		FromBuildConfig: servicesEnabledFromConfig,
 		FromYAML:        serviceListFromYAML,
 	})

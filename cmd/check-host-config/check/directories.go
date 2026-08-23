@@ -36,7 +36,7 @@ func init() {
 		Meta: &Metadata{
 			Name: "directories",
 		},
-		Func:       directoriesCheck,
+		Func:            directoriesCheck,
 		FromBuildConfig: directoriesFromConfig,
 		FromYAML:        directoriesFromYAML,
 	})

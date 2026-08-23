@@ -11,7 +11,7 @@ func init() {
 		Meta: &Metadata{
 			Name: "srv-masked",
 		},
-		Func:       servicesMaskedCheck,
+		Func:            servicesMaskedCheck,
 		FromBuildConfig: servicesMaskedFromConfig,
 		FromYAML:        serviceListFromYAML,
 	})

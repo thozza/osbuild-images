@@ -11,7 +11,7 @@ func init() {
 		Meta: &Metadata{
 			Name: "fw-srv-disabled",
 		},
-		Func:       firewallServicesDisabledCheck,
+		Func:            firewallServicesDisabledCheck,
 		FromBuildConfig: firewallServicesDisabledFromConfig,
 		FromYAML:        serviceListFromYAML,
 	})

@@ -61,7 +61,7 @@ func shouldRunOn(osRelease *check.OSRelease, runOn []string) bool {
 }
 
 // runChecks runs all checks sequentially and processes their results.
-func runChecks(checks []check.RegisteredCheck, config *buildconfig.BuildConfig, osRelease *check.OSRelease, quiet bool) bool {
+func runChecks(runs []check.CheckRun, mode check.RunMode, osRelease *check.OSRelease, quiet bool) bool {
 	defer log.SetPrefix("")
 	if quiet {
 		log.SetOutput(io.Discard)
@@ -69,29 +69,40 @@ func runChecks(checks []check.RegisteredCheck, config *buildconfig.BuildConfig, 
 	}
 
 	var results check.SortedResults
-	for _, chk := range checks {
+	for _, run := range runs {
+		meta := run.Check.Meta
 		var err error
-		meta := chk.Meta
 		log.SetPrefix(meta.Name + ": ")
 
-		switch {
-		case !shouldRunOn(osRelease, meta.RunOn):
-			err = check.Skip(osRelease.ID + "-" + osRelease.VersionID + " excluded via RunOn: " + strings.Join(meta.RunOn, ", "))
-		case meta.TempDisabled != "":
-			err = check.Skip("temporarily disabled: " + meta.TempDisabled)
-		default:
-			params, extractErr := chk.FromBuildConfig(config)
-			if extractErr != nil {
-				err = extractErr
-			} else if params == nil {
-				err = check.Skip("no relevant configuration")
-			} else {
-				err = chk.Func(meta, params)
+		if mode == check.ModeBuildConfig {
+			switch {
+			case !shouldRunOn(osRelease, meta.RunOn):
+				err = check.Skip(osRelease.ID + "-" + osRelease.VersionID + " excluded via RunOn: " + strings.Join(meta.RunOn, ", "))
+				results = append(results, check.Result{Meta: meta, Error: err})
+				if err != nil {
+					log.Println(err)
+				}
+				continue
+			case meta.TempDisabled != "":
+				err = check.Skip("temporarily disabled: " + meta.TempDisabled)
+				results = append(results, check.Result{Meta: meta, Error: err})
+				if err != nil {
+					log.Println(err)
+				}
+				continue
 			}
 		}
 
-		results = append(results, check.Result{Meta: meta, Error: err})
+		switch {
+		case run.Err != nil:
+			err = run.Err
+		case run.Params == nil:
+			err = check.Skip("no relevant configuration")
+		default:
+			err = run.Check.Func(meta, run.Params)
+		}
 
+		results = append(results, check.Result{Meta: meta, Error: err})
 		if err != nil {
 			log.Println(err)
 		}
@@ -118,35 +129,71 @@ func runChecks(checks []check.RegisteredCheck, config *buildconfig.BuildConfig, 
 	return !seenError
 }
 
+func readInput(path string) ([]byte, error) {
+	if path == "-" {
+		return io.ReadAll(os.Stdin)
+	}
+	return os.ReadFile(path)
+}
+
 func main() {
 	log.SetOutput(os.Stdout)
 	log.SetFlags(0)
 
+	checksFile := flag.String("checks-file", "", "path to YAML checks definition file (- for stdin)")
+	validate := flag.Bool("validate", false, "validate checks file and exit without running checks")
 	waitTimeout := flag.Duration("wait-timeout", 15*time.Minute, "timeout for waiting for system to be running (0 to skip)")
 	quiet := flag.Bool("quiet", false, "less logging output")
 	flag.Parse()
-	configFile := flag.Arg(0)
-	if configFile == "" {
-		log.Fatalf("Missing build config file, usage: %s <config.json>", os.Args[0])
+
+	hasChecksFile := *checksFile != ""
+	hasConfigArg := flag.Arg(0) != ""
+
+	if *validate && !hasChecksFile {
+		log.Fatalf("--validate requires --checks-file")
+	}
+	if hasChecksFile == hasConfigArg {
+		log.Fatalf("Provide exactly one of: --checks-file <file> or <config.json>")
 	}
 
-	var config *buildconfig.BuildConfig
-	var err error
-	config, err = buildconfig.New(configFile, nil)
-	if err != nil {
-		log.Fatalf("Failed to load build config: %v\n", err)
-	}
-
-	if err := waitForSystem(*waitTimeout); err != nil {
-		log.Fatalf("Problem during waiting for system to be running: %v\n", err)
-	}
-
-	osRelease, _ := check.ParseOSRelease("")
-	if osRelease == nil {
-		log.Println("Could not parse /etc/os-release, RunOn filtering disabled")
-	}
-
-	if !runChecks(checks, config, osRelease, *quiet) {
-		log.Fatalf("Host check with config %q failed, return code 1\n", configFile)
+	if hasChecksFile {
+		data, err := readInput(*checksFile)
+		if err != nil {
+			log.Fatalf("Failed to read checks file: %v", err)
+		}
+		def, err := check.ParseChecksFile(data)
+		if err != nil {
+			log.Fatalf("Invalid checks file: %v", err)
+		}
+		runs, err := check.PrepareFromYAML(def)
+		if err != nil {
+			log.Fatalf("Failed to prepare checks: %v", err)
+		}
+		if *validate {
+			fmt.Printf("Checks file valid: %d checks defined\n", len(runs))
+			return
+		}
+		if err := waitForSystem(*waitTimeout); err != nil {
+			log.Fatalf("Problem during waiting for system to be running: %v", err)
+		}
+		if !runChecks(runs, check.ModeYAML, nil, *quiet) {
+			log.Fatalf("Checks from %q failed, return code 1", *checksFile)
+		}
+	} else {
+		config, err := buildconfig.New(flag.Arg(0), nil)
+		if err != nil {
+			log.Fatalf("Failed to load build config: %v", err)
+		}
+		if err := waitForSystem(*waitTimeout); err != nil {
+			log.Fatalf("Problem during waiting for system to be running: %v", err)
+		}
+		osRelease, _ := check.ParseOSRelease("")
+		if osRelease == nil {
+			log.Println("Could not parse /etc/os-release, RunOn filtering disabled")
+		}
+		runs := check.PrepareFromBuildConfig(config)
+		if !runChecks(runs, check.ModeBuildConfig, osRelease, *quiet) {
+			log.Fatalf("Host check with config %q failed, return code 1", flag.Arg(0))
+		}
 	}
 }

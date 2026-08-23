@@ -142,7 +142,13 @@ func TestRunChecks_ParamsSkip(t *testing.T) {
 				},
 			}
 
-			runChecks([]check.RegisteredCheck{dummyCheck}, tt.config, nil, true)
+			var params check.CheckParams
+			if tt.config != nil {
+				p, _ := dummyCheck.FromBuildConfig(tt.config)
+				params = p
+			}
+			runs := []check.CheckRun{{Check: dummyCheck, Params: params}}
+			runChecks(runs, check.ModeBuildConfig, nil, true)
 			if checkRan != tt.wantCheckRan {
 				t.Errorf("check ran = %v, want %v", checkRan, tt.wantCheckRan)
 			}

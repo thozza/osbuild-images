@@ -31,7 +31,7 @@ func init() {
 			Name:  "filesystem",
 			RunOn: []string{"!rhel-8.4", "!rhel-8.6", "!rhel-8.8", "!rhel-8.10"},
 		},
-		Func:       filesystemCheck,
+		Func:            filesystemCheck,
 		FromBuildConfig: filesystemFromConfig,
 		FromYAML:        filesystemFromYAML,
 	})

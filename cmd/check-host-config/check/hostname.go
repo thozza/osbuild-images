@@ -31,7 +31,7 @@ func init() {
 		Meta: &Metadata{
 			Name: "hostname",
 		},
-		Func:       hostnameCheck,
+		Func:            hostnameCheck,
 		FromBuildConfig: hostnameFromConfig,
 		FromYAML:        hostnameFromYAML,
 	})

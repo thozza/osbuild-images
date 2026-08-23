@@ -28,7 +28,7 @@ func init() {
 		Meta: &Metadata{
 			Name: "users",
 		},
-		Func:       usersCheck,
+		Func:            usersCheck,
 		FromBuildConfig: usersFromConfig,
 		FromYAML:        usersFromYAML,
 	})

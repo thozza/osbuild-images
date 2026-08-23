@@ -29,7 +29,7 @@ func init() {
 		Meta: &Metadata{
 			Name: "fw-ports",
 		},
-		Func:       firewallPortsCheck,
+		Func:            firewallPortsCheck,
 		FromBuildConfig: firewallPortsFromConfig,
 		FromYAML:        portListFromYAML,
 	})

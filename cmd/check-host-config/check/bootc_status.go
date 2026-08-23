@@ -16,7 +16,7 @@ func init() {
 		Meta: &Metadata{
 			Name: "bootc-status",
 		},
-		Func:       bootcStatusCheck,
+		Func:            bootcStatusCheck,
 		FromBuildConfig: bootcStatusFromConfig,
 		FromYAML:        bootcStatusFromYAML,
 	})

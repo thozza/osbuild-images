@@ -27,7 +27,7 @@ func init() {
 			Name:         "kernel",
 			TempDisabled: "https://github.com/osbuild/image-builder/pull/2175",
 		},
-		Func:       kernelCheck,
+		Func:            kernelCheck,
 		FromBuildConfig: kernelFromConfig,
 		FromYAML:        kernelFromYAML,
 	})

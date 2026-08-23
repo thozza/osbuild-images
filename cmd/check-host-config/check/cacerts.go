@@ -31,7 +31,7 @@ func init() {
 		Meta: &Metadata{
 			Name: "cacerts",
 		},
-		Func:       cacertsCheck,
+		Func:            cacertsCheck,
 		FromBuildConfig: cacertsFromConfig,
 		FromYAML:        caCertsFromYAML,
 	})

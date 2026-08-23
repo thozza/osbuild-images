@@ -40,7 +40,7 @@ func init() {
 		Meta: &Metadata{
 			Name: "oscap",
 		},
-		Func:       openSCAPCheck,
+		Func:            openSCAPCheck,
 		FromBuildConfig: oscapFromConfig,
 		FromYAML:        oscapFromYAML,
 	})

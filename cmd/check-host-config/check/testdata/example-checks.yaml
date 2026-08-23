@@ -1,0 +1,89 @@
+version: 1
+checks:
+  - type: bootc-status
+
+  - type: srv-enabled
+    services:
+      - sshd
+      - chronyd
+
+  - type: srv-disabled
+    services:
+      - cups
+
+  - type: srv-masked
+    services:
+      - debug-shell
+
+  - type: files
+    entries:
+      - path: /etc/motd
+        mode: "0644"
+        user: root
+        group: root
+        content: "Welcome to the system"
+      - path: /etc/issue
+        mode: "0644"
+
+  - type: directories
+    entries:
+      - path: /opt/data
+        mode: "0755"
+        user: root
+        group: root
+      - path: /var/log/app
+        mode: "0750"
+        user: root
+        group: adm
+
+  - type: filesystem
+    mountpoints:
+      - /var
+      - /home
+      - /tmp
+
+  - type: fw-ports
+    ports:
+      - "8080:tcp"
+      - "443:tcp"
+      - "53:udp"
+
+  - type: fw-srv-enabled
+    services:
+      - ssh
+      - https
+
+  - type: fw-srv-disabled
+    services:
+      - mdns
+      - samba
+
+  - type: hostname
+    expected: webserver.example.com
+
+  - type: kernel
+    name: kernel-rt
+    append: "quiet splash audit=1"
+
+  - type: oscap
+    datastream: /usr/share/xml/scap/ssg/content/ssg-rhel9-ds.xml
+    profile_id: xccdf_org.ssgproject.content_profile_cis
+
+  - type: cacerts
+    certificates:
+      - |
+        -----BEGIN CERTIFICATE-----
+        MIIDxTCCAq2gAwIBAgIJAJC1HiIAZAiUMA0GCSqGSIb3Qw0teleportBAYTAlVT
+        MQswCQYDVQQIEwJDQTEWMBQGA1UEBxMNU2FuIEZyYW5jaXNjbzENMAsGA1UECh
+        -----END CERTIFICATE-----
+
+  - type: modularity
+    modules:
+      - "nodejs:18"
+      - "ruby:3.1"
+
+  - type: users
+    users:
+      - root
+      - appuser
+      - deploy

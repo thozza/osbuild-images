@@ -1,45 +1,99 @@
 ## check-host-config
 
-A command used to test the environment against build configuration JSON. It
-takes a configuration file and validates each customization. Before validation
-starts, it waits until systemd reports the system as fully booted.
+A command used to test a host environment against a build configuration or a
+YAML checks definition file. Before validation starts, it waits until systemd
+reports the system as fully booted.
 
 The command is safe to run on development machines; it does not change
 configuration or leave resources behind.
 
+### Usage
+
+**BuildConfig mode** (existing):
+
+    check-host-config <config.json>
+
+**YAML checks mode**:
+
+    check-host-config --checks-file checks.yaml
+    cat checks.yaml | check-host-config --checks-file -
+
+**Validation only** (parse and validate without running checks):
+
+    check-host-config --checks-file checks.yaml --validate
+
+In YAML mode, `TempDisabled` and `RunOn` metadata are ignored - every listed
+check runs unconditionally. The `version` field guards the top-level structure
+only, not per-check parameter schemas.
+
+See `check/testdata/example-checks.yaml` for a complete working example
+covering all 16 check types. It can be validated with `--validate`.
+
+### YAML checks file format
+
+```yaml
+version: 1
+checks:
+  - type: <check-name>
+    <check-specific parameters>
+```
+
+Supported check types and their parameters:
+
+| Check type | Parameters |
+|---|---|
+| `srv-enabled`, `srv-disabled`, `srv-masked`, `fw-srv-enabled`, `fw-srv-disabled` | `services: [list]` |
+| `fw-ports` | `ports: ["8080:tcp"]` |
+| `files` | `entries: [{path, mode, user, group, content}]` |
+| `directories` | `entries: [{path, mode, user, group}]` |
+| `filesystem` | `mountpoints: ["/var", "/home"]` |
+| `hostname` | `expected: "myhost.example.com"` |
+| `bootc-status` | (no parameters) |
+| `users` | `users: ["root", "appuser"]` |
+| `kernel` | `name: "kernel-rt"`, `append: "quiet"` |
+| `modularity` | `modules: ["nodejs:18"]` |
+| `cacerts` | `certificates: ["-----BEGIN..."]` |
+| `oscap` | `profile_id: "xccdf_..."`, `datastream: "/path/to/ds.xml"` (optional) |
+
 ### Implementing new checks
 
-Each check is a function that takes the metadata and configuration struct. It
-returns an error, or nil when the check succeeds.
-
-Metadata information must be registered:
+Each check is registered with a `RegisterCheck` call in an `init()` function.
+The check receives extracted parameters (not the raw BuildConfig) via `Func`.
+Two extractors must be provided: `FromBuildConfig` for BuildConfig mode and
+`FromYAML` for YAML mode.
 
 ```go
 func init() {
-	RegisterCheck(Metadata{
-		Name:                   "users",
-		RequiresBlueprint:      true,
-		RequiresCustomizations: true,
-        TempDisabled:           "",
-        RunOn:                  []string{"centos", "!rhel"},
-	}, usersCheck)
+    RegisterCheck(RegisteredCheck{
+        Meta: &Metadata{
+            Name:         "users",
+            TempDisabled: "",
+            RunOn:        []string{"centos", "!rhel"},
+        },
+        Func:            usersCheck,
+        FromBuildConfig: usersFromConfig,
+        FromYAML:        usersFromYAML,
+    })
 }
 ```
 
-Metadata fields have the following semantics:
+Metadata fields:
 
 * **Name**: name of the check.
-* **RequiresBlueprint**: when set to true and the blueprint is empty, the check is automatically skipped.
-* **RequiresCustomizations**: when set to true and config, blueprint, or customizations is nil, the check is skipped.
-* **TempDisabled**: the check is temporarily disabled (skipped) when this is not an empty string (e.g. issue URL).
-* **RunOn**: when set, run on specific distro IDs (or use bang to exclude specific OS).
+* **TempDisabled**: the check is temporarily disabled (skipped) when this is
+  not an empty string (e.g. issue URL). Only evaluated in BuildConfig mode.
+* **RunOn**: when set, run on specific distro IDs (or use bang to exclude).
+  Only evaluated in BuildConfig mode.
+
+`FromBuildConfig` returns `nil` params to skip the check (replaces the old
+`RequiresBlueprint`/`RequiresCustomizations`/`RequiresBootc` flags).
 
 Checks can return:
 
-* pass — `Pass()` function (returns `nil`)
-* warning — `Warning(reason)` function
-* error — `Fail(reason)` function
-* skip — `Skip(reason)` function
+* pass - `Pass()` function (returns `nil`)
+* warning - `Warning(reason)` function
+* error - `Fail(reason)` function
+* skip - `Skip(reason)` function
 
 ### Unit testing
 

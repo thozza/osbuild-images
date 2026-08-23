@@ -38,7 +38,7 @@ func buildConfigWithBlueprint(fn func(*blueprint.Blueprint)) *buildconfig.BuildC
 	}
 }
 
-// runCheck is a test helper that runs a check via FromBuildConfig then ParamFunc,
+// runCheck is a test helper that runs a check via FromBuildConfig then Func,
 // reproducing the runner's behavior: returns Skip when FromBuildConfig returns nil params.
 func runCheck(t *testing.T, chk check.RegisteredCheck, config *buildconfig.BuildConfig) error {
 	t.Helper()
@@ -49,7 +49,7 @@ func runCheck(t *testing.T, chk check.RegisteredCheck, config *buildconfig.Build
 	if params == nil {
 		return check.Skip("no relevant configuration")
 	}
-	return chk.ParamFunc(chk.Meta, params)
+	return chk.Func(chk.Meta, params)
 }
 
 func TestParseOSRelease(t *testing.T) {

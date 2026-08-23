@@ -36,11 +36,11 @@ func oscapFromYAML(node *yaml.Node) (CheckParams, error) {
 }
 
 func init() {
-	RegisterCheckWithParams(RegisteredCheck{
+	RegisterCheck(RegisteredCheck{
 		Meta: &Metadata{
 			Name: "oscap",
 		},
-		ParamFunc:       openSCAPCheck,
+		Func:       openSCAPCheck,
 		FromBuildConfig: oscapFromConfig,
 		FromYAML:        oscapFromYAML,
 	})

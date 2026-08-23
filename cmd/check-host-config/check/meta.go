@@ -16,8 +16,8 @@ type Metadata struct {
 // CheckParams is the intermediate type that decouples check logic from BuildConfig.
 type CheckParams any
 
-// ParamCheckFunc is a check function that receives extracted params instead of BuildConfig.
-type ParamCheckFunc func(meta *Metadata, params CheckParams) error
+// CheckFunc is a check function that receives extracted params instead of BuildConfig.
+type CheckFunc func(meta *Metadata, params CheckParams) error
 
 // ParamsFromConfig extracts CheckParams from a BuildConfig.
 type ParamsFromConfig func(*buildconfig.BuildConfig) (CheckParams, error)
@@ -28,7 +28,7 @@ type ParamsFromYAML func(*yaml.Node) (CheckParams, error)
 // RegisteredCheck represents a registered check with its metadata and function.
 type RegisteredCheck struct {
 	Meta            *Metadata
-	ParamFunc       ParamCheckFunc
+	Func            CheckFunc
 	FromBuildConfig ParamsFromConfig
 	FromYAML        ParamsFromYAML
 }
@@ -68,8 +68,8 @@ func (sr SortedResults) Less(i, j int) bool {
 	return getRank(sr[i].Error) < getRank(sr[j].Error)
 }
 
-// RegisterCheckWithParams registers a params-based check.
-func RegisterCheckWithParams(rc RegisteredCheck) {
+// RegisterCheck registers a check implementation.
+func RegisterCheck(rc RegisteredCheck) {
 	checkRegistry = append(checkRegistry, rc)
 }
 

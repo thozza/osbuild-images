@@ -86,7 +86,7 @@ func runChecks(checks []check.RegisteredCheck, config *buildconfig.BuildConfig, 
 			} else if params == nil {
 				err = check.Skip("no relevant configuration")
 			} else {
-				err = chk.ParamFunc(meta, params)
+				err = chk.Func(meta, params)
 			}
 		}
 

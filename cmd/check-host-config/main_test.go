@@ -130,7 +130,7 @@ func TestRunChecks_ParamsSkip(t *testing.T) {
 			checkRan := false
 			dummyCheck := check.RegisteredCheck{
 				Meta: &check.Metadata{Name: "test-params-check"},
-				ParamFunc: func(meta *check.Metadata, params check.CheckParams) error {
+				Func: func(meta *check.Metadata, params check.CheckParams) error {
 					checkRan = true
 					return nil
 				},
@@ -319,7 +319,7 @@ func TestSmokeAll(t *testing.T) {
 				t.Logf("Check %s skipped (no params)", chk.Meta.Name)
 				return
 			}
-			err = chk.ParamFunc(chk.Meta, params)
+			err = chk.Func(chk.Meta, params)
 			if errors.Is(err, check.ErrCheckSkipped) {
 				t.Logf("Check %s skipped", chk.Meta.Name)
 				return

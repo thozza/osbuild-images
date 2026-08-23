@@ -7,11 +7,11 @@ import (
 )
 
 func init() {
-	RegisterCheckWithParams(RegisteredCheck{
+	RegisterCheck(RegisteredCheck{
 		Meta: &Metadata{
 			Name: "srv-disabled",
 		},
-		ParamFunc:       servicesDisabledCheck,
+		Func:       servicesDisabledCheck,
 		FromBuildConfig: servicesDisabledFromConfig,
 		FromYAML:        serviceListFromYAML,
 	})

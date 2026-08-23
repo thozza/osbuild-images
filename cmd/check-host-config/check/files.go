@@ -34,11 +34,11 @@ func filesFromYAML(node *yaml.Node) (CheckParams, error) {
 }
 
 func init() {
-	RegisterCheckWithParams(RegisteredCheck{
+	RegisterCheck(RegisteredCheck{
 		Meta: &Metadata{
 			Name: "files",
 		},
-		ParamFunc:       filesCheck,
+		Func:       filesCheck,
 		FromBuildConfig: filesFromConfig,
 		FromYAML:        filesFromYAML,
 	})

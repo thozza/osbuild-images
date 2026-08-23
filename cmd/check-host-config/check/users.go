@@ -24,11 +24,11 @@ func usersFromYAML(node *yaml.Node) (CheckParams, error) {
 }
 
 func init() {
-	RegisterCheckWithParams(RegisteredCheck{
+	RegisterCheck(RegisteredCheck{
 		Meta: &Metadata{
 			Name: "users",
 		},
-		ParamFunc:       usersCheck,
+		Func:       usersCheck,
 		FromBuildConfig: usersFromConfig,
 		FromYAML:        usersFromYAML,
 	})

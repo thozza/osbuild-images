@@ -7,11 +7,11 @@ import (
 )
 
 func init() {
-	RegisterCheckWithParams(RegisteredCheck{
+	RegisterCheck(RegisteredCheck{
 		Meta: &Metadata{
 			Name: "fw-srv-enabled",
 		},
-		ParamFunc:       firewallServicesEnabledCheck,
+		Func:       firewallServicesEnabledCheck,
 		FromBuildConfig: firewallServicesEnabledFromConfig,
 		FromYAML:        serviceListFromYAML,
 	})

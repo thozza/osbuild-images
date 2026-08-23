@@ -27,11 +27,11 @@ func hostnameFromYAML(node *yaml.Node) (CheckParams, error) {
 }
 
 func init() {
-	RegisterCheckWithParams(RegisteredCheck{
+	RegisterCheck(RegisteredCheck{
 		Meta: &Metadata{
 			Name: "hostname",
 		},
-		ParamFunc:       hostnameCheck,
+		Func:       hostnameCheck,
 		FromBuildConfig: hostnameFromConfig,
 		FromYAML:        hostnameFromYAML,
 	})

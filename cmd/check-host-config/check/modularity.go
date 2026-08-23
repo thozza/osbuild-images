@@ -25,12 +25,12 @@ func modularityFromYAML(node *yaml.Node) (CheckParams, error) {
 }
 
 func init() {
-	RegisterCheckWithParams(RegisteredCheck{
+	RegisterCheck(RegisteredCheck{
 		Meta: &Metadata{
 			Name:  "modularity",
 			RunOn: []string{"centos-9"},
 		},
-		ParamFunc:       modularityCheck,
+		Func:       modularityCheck,
 		FromBuildConfig: modularityFromConfig,
 		FromYAML:        modularityFromYAML,
 	})

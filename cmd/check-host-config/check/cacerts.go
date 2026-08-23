@@ -27,11 +27,11 @@ func caCertsFromYAML(node *yaml.Node) (CheckParams, error) {
 }
 
 func init() {
-	RegisterCheckWithParams(RegisteredCheck{
+	RegisterCheck(RegisteredCheck{
 		Meta: &Metadata{
 			Name: "cacerts",
 		},
-		ParamFunc:       cacertsCheck,
+		Func:       cacertsCheck,
 		FromBuildConfig: cacertsFromConfig,
 		FromYAML:        caCertsFromYAML,
 	})

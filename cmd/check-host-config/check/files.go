@@ -1,30 +1,79 @@
 package check
 
 import (
-	"log"
+	"fmt"
 	"os"
 	"strconv"
 	"syscall"
 
 	"github.com/osbuild/image-builder/internal/buildconfig"
+	"gopkg.in/yaml.v3"
 )
 
-func init() {
-	RegisterCheck(Metadata{
-		Name:                   "files",
-		RequiresBlueprint:      true,
-		RequiresCustomizations: true,
-	}, filesCheck)
+type FileCheckEntry struct {
+	Path    string `yaml:"path"`
+	Mode    string `yaml:"mode,omitempty"`
+	User    any    `yaml:"user,omitempty"`
+	Group   any    `yaml:"group,omitempty"`
+	Content string `yaml:"content,omitempty"`
 }
 
-func filesCheck(meta *Metadata, config *buildconfig.BuildConfig) error {
-	expected := config.Blueprint.Customizations.Files
+type FilesCheckParams struct {
+	Entries []FileCheckEntry `yaml:"entries"`
+}
 
-	if len(expected) == 0 {
-		return Skip("no files to check")
+func filesFromYAML(node *yaml.Node) (CheckParams, error) {
+	var p FilesCheckParams
+	if err := node.Decode(&p); err != nil {
+		return nil, err
+	}
+	if len(p.Entries) == 0 {
+		return nil, fmt.Errorf("'entries' list must not be empty")
+	}
+	return p, nil
+}
+
+func init() {
+	RegisterCheckWithParams(RegisteredCheck{
+		Meta: &Metadata{
+			Name:                   "files",
+			RequiresBlueprint:      true,
+			RequiresCustomizations: true,
+		},
+		ParamFunc:       filesCheck,
+		FromBuildConfig: filesFromConfig,
+		FromYAML:        filesFromYAML,
+	})
+}
+
+func filesFromConfig(c *buildconfig.BuildConfig) (CheckParams, error) {
+	if c == nil || c.Blueprint == nil || c.Blueprint.Customizations == nil {
+		return nil, nil
+	}
+	files := c.Blueprint.Customizations.Files
+	if len(files) == 0 {
+		return nil, nil
+	}
+	entries := make([]FileCheckEntry, len(files))
+	for i, f := range files {
+		entries[i] = FileCheckEntry{
+			Path:    f.Path,
+			Mode:    f.Mode,
+			User:    f.User,
+			Group:   f.Group,
+			Content: f.Data,
+		}
+	}
+	return FilesCheckParams{Entries: entries}, nil
+}
+
+func filesCheck(meta *Metadata, params CheckParams) error {
+	p, ok := params.(FilesCheckParams)
+	if !ok {
+		return Fail("invalid params type")
 	}
 
-	for _, file := range expected {
+	for _, file := range p.Entries {
 		if !Exists(file.Path) {
 			return Fail("file does not exist:", file.Path)
 		}
@@ -70,19 +119,15 @@ func filesCheck(meta *Metadata, config *buildconfig.BuildConfig) error {
 			}
 		}
 
-		if len(file.Data) > 0 {
+		if len(file.Content) > 0 {
 			content, err := ReadFile(file.Path)
 			if err != nil {
 				return Fail("failed to read file:", file.Path)
 			}
 
-			if string(content) != file.Data {
+			if string(content) != file.Content {
 				return Fail("file content does not match:", file.Path)
 			}
-		}
-
-		if len(file.URI) > 0 {
-			log.Printf("Not checking file content specified by URI: %s", file.URI)
 		}
 	}
 

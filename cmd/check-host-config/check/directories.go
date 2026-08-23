@@ -1,28 +1,76 @@
 package check
 
 import (
+	"fmt"
 	"strconv"
 	"syscall"
 
 	"github.com/osbuild/image-builder/internal/buildconfig"
+	"gopkg.in/yaml.v3"
 )
 
-func init() {
-	RegisterCheck(Metadata{
-		Name:                   "directories",
-		RequiresBlueprint:      true,
-		RequiresCustomizations: true,
-	}, directoriesCheck)
+type DirectoryCheckEntry struct {
+	Path  string `yaml:"path"`
+	Mode  string `yaml:"mode,omitempty"`
+	User  any    `yaml:"user,omitempty"`
+	Group any    `yaml:"group,omitempty"`
 }
 
-func directoriesCheck(meta *Metadata, config *buildconfig.BuildConfig) error {
-	expected := config.Blueprint.Customizations.Directories
+type DirectoriesCheckParams struct {
+	Entries []DirectoryCheckEntry `yaml:"entries"`
+}
 
-	if len(expected) == 0 {
-		return Skip("no directories to check")
+func directoriesFromYAML(node *yaml.Node) (CheckParams, error) {
+	var p DirectoriesCheckParams
+	if err := node.Decode(&p); err != nil {
+		return nil, err
+	}
+	if len(p.Entries) == 0 {
+		return nil, fmt.Errorf("'entries' list must not be empty")
+	}
+	return p, nil
+}
+
+func init() {
+	RegisterCheckWithParams(RegisteredCheck{
+		Meta: &Metadata{
+			Name:                   "directories",
+			RequiresBlueprint:      true,
+			RequiresCustomizations: true,
+		},
+		ParamFunc:       directoriesCheck,
+		FromBuildConfig: directoriesFromConfig,
+		FromYAML:        directoriesFromYAML,
+	})
+}
+
+func directoriesFromConfig(c *buildconfig.BuildConfig) (CheckParams, error) {
+	if c == nil || c.Blueprint == nil || c.Blueprint.Customizations == nil {
+		return nil, nil
+	}
+	dirs := c.Blueprint.Customizations.Directories
+	if len(dirs) == 0 {
+		return nil, nil
+	}
+	entries := make([]DirectoryCheckEntry, len(dirs))
+	for i, d := range dirs {
+		entries[i] = DirectoryCheckEntry{
+			Path:  d.Path,
+			Mode:  d.Mode,
+			User:  d.User,
+			Group: d.Group,
+		}
+	}
+	return DirectoriesCheckParams{Entries: entries}, nil
+}
+
+func directoriesCheck(meta *Metadata, params CheckParams) error {
+	p, ok := params.(DirectoriesCheckParams)
+	if !ok {
+		return Fail("invalid params type")
 	}
 
-	for _, dir := range expected {
+	for _, dir := range p.Entries {
 		if !ExistsDir(dir.Path) {
 			return Fail("directory does not exist:", dir.Path)
 		}

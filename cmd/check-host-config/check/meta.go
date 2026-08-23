@@ -2,6 +2,7 @@ package check
 
 import (
 	"github.com/osbuild/image-builder/internal/buildconfig"
+	"gopkg.in/yaml.v3"
 )
 
 // Metadata provides information about a check. It is used to manage the execution
@@ -18,10 +19,25 @@ type Metadata struct {
 // CheckFunc is the function type that all checks must implement.
 type CheckFunc func(meta *Metadata, config *buildconfig.BuildConfig) error
 
+// CheckParams is the intermediate type that decouples check logic from BuildConfig.
+type CheckParams any
+
+// ParamCheckFunc is a check function that receives extracted params instead of BuildConfig.
+type ParamCheckFunc func(meta *Metadata, params CheckParams) error
+
+// ParamsFromConfig extracts CheckParams from a BuildConfig.
+type ParamsFromConfig func(*buildconfig.BuildConfig) (CheckParams, error)
+
+// ParamsFromYAML parses CheckParams from a YAML node.
+type ParamsFromYAML func(*yaml.Node) (CheckParams, error)
+
 // RegisteredCheck represents a registered check with its metadata and function.
 type RegisteredCheck struct {
-	Meta *Metadata // Metadata of the check
-	Func CheckFunc // Function to execute the check
+	Meta            *Metadata
+	Func            CheckFunc
+	ParamFunc       ParamCheckFunc
+	FromBuildConfig ParamsFromConfig
+	FromYAML        ParamsFromYAML
 }
 
 // Result represents the outcome of a check execution.
@@ -66,6 +82,26 @@ func RegisterCheck(meta Metadata, fn CheckFunc) {
 		Meta: &meta,
 		Func: fn,
 	})
+}
+
+// RegisterCheckWithParams registers a params-based check. It auto-generates
+// a backward-compatible Func wrapper that calls FromBuildConfig then ParamFunc.
+func RegisterCheckWithParams(rc RegisteredCheck) {
+	if rc.ParamFunc != nil && rc.Func == nil && rc.FromBuildConfig != nil {
+		fromConfig := rc.FromBuildConfig
+		paramFunc := rc.ParamFunc
+		rc.Func = func(m *Metadata, config *buildconfig.BuildConfig) error {
+			params, err := fromConfig(config)
+			if err != nil {
+				return err
+			}
+			if params == nil {
+				return Skip("no relevant configuration")
+			}
+			return paramFunc(m, params)
+		}
+	}
+	checkRegistry = append(checkRegistry, rc)
 }
 
 var checkRegistry []RegisteredCheck

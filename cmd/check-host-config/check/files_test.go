@@ -174,7 +174,7 @@ func TestFilesCheck(t *testing.T) {
 				Files: []blueprint.FileCustomization{*tt.config},
 			})
 
-			err := chk.Func(chk.Meta, config)
+			err := runCheck(t, chk, config)
 			if tt.wantErr != nil {
 				require.Error(t, err)
 				assert.True(t, errors.Is(err, tt.wantErr))

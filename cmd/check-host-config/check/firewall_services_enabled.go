@@ -9,9 +9,7 @@ import (
 func init() {
 	RegisterCheckWithParams(RegisteredCheck{
 		Meta: &Metadata{
-			Name:                   "fw-srv-enabled",
-			RequiresBlueprint:      true,
-			RequiresCustomizations: true,
+			Name: "fw-srv-enabled",
 		},
 		ParamFunc:       firewallServicesEnabledCheck,
 		FromBuildConfig: firewallServicesEnabledFromConfig,

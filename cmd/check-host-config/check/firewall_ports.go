@@ -27,9 +27,7 @@ func portListFromYAML(node *yaml.Node) (CheckParams, error) {
 func init() {
 	RegisterCheckWithParams(RegisteredCheck{
 		Meta: &Metadata{
-			Name:                   "fw-ports",
-			RequiresBlueprint:      true,
-			RequiresCustomizations: true,
+			Name: "fw-ports",
 		},
 		ParamFunc:       firewallPortsCheck,
 		FromBuildConfig: firewallPortsFromConfig,

@@ -103,28 +103,20 @@ func TestShouldRunOn(t *testing.T) {
 	}
 }
 
-func TestRunChecks_RequiresBootc(t *testing.T) {
+func TestRunChecks_ParamsSkip(t *testing.T) {
 	tests := []struct {
 		name         string
 		config       *buildconfig.BuildConfig
 		wantCheckRan bool
 	}{
 		{
-			name:         "skip when config is nil",
+			name:         "skip when FromBuildConfig returns nil",
 			config:       nil,
 			wantCheckRan: false,
 		},
 		{
-			name: "skip when Options.Bootc is nil",
+			name: "run when FromBuildConfig returns params",
 			config: &buildconfig.BuildConfig{
-				Blueprint: &blueprint.Blueprint{},
-			},
-			wantCheckRan: false,
-		},
-		{
-			name: "run when Options.Bootc is set",
-			config: &buildconfig.BuildConfig{
-				Blueprint: &blueprint.Blueprint{},
 				Options: distro.ImageOptions{
 					Bootc: &distro.BootcImageOptions{},
 				},
@@ -137,13 +129,16 @@ func TestRunChecks_RequiresBootc(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			checkRan := false
 			dummyCheck := check.RegisteredCheck{
-				Meta: &check.Metadata{
-					Name:          "test-bootc-check",
-					RequiresBootc: true,
-				},
-				Func: func(meta *check.Metadata, config *buildconfig.BuildConfig) error {
+				Meta: &check.Metadata{Name: "test-params-check"},
+				ParamFunc: func(meta *check.Metadata, params check.CheckParams) error {
 					checkRan = true
 					return nil
+				},
+				FromBuildConfig: func(c *buildconfig.BuildConfig) (check.CheckParams, error) {
+					if c == nil || c.Options.Bootc == nil {
+						return nil, nil
+					}
+					return struct{}{}, nil
 				},
 			}
 
@@ -316,7 +311,15 @@ func TestSmokeAll(t *testing.T) {
 					Customizations: &tt.c,
 				},
 			}
-			err := chk.Func(chk.Meta, config)
+			params, err := chk.FromBuildConfig(config)
+			if err != nil {
+				t.Fatalf("FromBuildConfig failed: %v", err)
+			}
+			if params == nil {
+				t.Logf("Check %s skipped (no params)", chk.Meta.Name)
+				return
+			}
+			err = chk.ParamFunc(chk.Meta, params)
 			if errors.Is(err, check.ErrCheckSkipped) {
 				t.Logf("Check %s skipped", chk.Meta.Name)
 				return

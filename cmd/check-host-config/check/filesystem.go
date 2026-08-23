@@ -28,10 +28,8 @@ func filesystemFromYAML(node *yaml.Node) (CheckParams, error) {
 func init() {
 	RegisterCheckWithParams(RegisteredCheck{
 		Meta: &Metadata{
-			Name:                   "filesystem",
-			RequiresBlueprint:      true,
-			RequiresCustomizations: true,
-			RunOn:                  []string{"!rhel-8.4", "!rhel-8.6", "!rhel-8.8", "!rhel-8.10"},
+			Name:  "filesystem",
+			RunOn: []string{"!rhel-8.4", "!rhel-8.6", "!rhel-8.8", "!rhel-8.10"},
 		},
 		ParamFunc:       filesystemCheck,
 		FromBuildConfig: filesystemFromConfig,

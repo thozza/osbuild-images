@@ -9,9 +9,7 @@ import (
 func init() {
 	RegisterCheckWithParams(RegisteredCheck{
 		Meta: &Metadata{
-			Name:                   "srv-disabled",
-			RequiresBlueprint:      true,
-			RequiresCustomizations: true,
+			Name: "srv-disabled",
 		},
 		ParamFunc:       servicesDisabledCheck,
 		FromBuildConfig: servicesDisabledFromConfig,

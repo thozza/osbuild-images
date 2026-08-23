@@ -50,7 +50,7 @@ func TestBootcStatusCheck(t *testing.T) {
 			chk, found := check.FindCheckByName("bootc-status")
 			require.True(t, found, "bootc-status check not found")
 
-			err := chk.Func(chk.Meta, tt.config)
+			err := runCheck(t, chk, tt.config)
 			if tt.wantErr != nil {
 				require.Error(t, err)
 				assert.True(t, errors.Is(err, tt.wantErr))

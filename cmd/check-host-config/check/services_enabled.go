@@ -26,9 +26,7 @@ func serviceListFromYAML(node *yaml.Node) (CheckParams, error) {
 func init() {
 	RegisterCheckWithParams(RegisteredCheck{
 		Meta: &Metadata{
-			Name:                   "srv-enabled",
-			RequiresBlueprint:      true,
-			RequiresCustomizations: true,
+			Name: "srv-enabled",
 		},
 		ParamFunc:       servicesEnabledCheck,
 		FromBuildConfig: servicesEnabledFromConfig,

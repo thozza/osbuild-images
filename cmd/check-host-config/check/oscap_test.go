@@ -67,7 +67,7 @@ func TestOpenSCAPCheck(t *testing.T) {
 		},
 	})
 
-	require.NoError(t, chk.Func(chk.Meta, config))
+	require.NoError(t, runCheck(t, chk, config))
 }
 
 func TestOpenSCAPCheckSkip(t *testing.T) {
@@ -77,7 +77,7 @@ func TestOpenSCAPCheckSkip(t *testing.T) {
 		OpenSCAP: nil,
 	})
 
-	err := chk.Func(chk.Meta, config)
+	err := runCheck(t, chk, config)
 	require.Error(t, err)
 	assert.True(t, check.IsSkip(err))
 }
@@ -92,7 +92,7 @@ func TestOpenSCAPCheckSkipIncomplete(t *testing.T) {
 		},
 	})
 
-	err := chk.Func(chk.Meta, config)
+	err := runCheck(t, chk, config)
 	require.Error(t, err)
 	assert.True(t, check.IsSkip(err))
 }
@@ -123,7 +123,7 @@ func TestOpenSCAPCheckFailNoResults(t *testing.T) {
 		},
 	})
 
-	err := chk.Func(chk.Meta, config)
+	err := runCheck(t, chk, config)
 	require.Error(t, err)
 	assert.True(t, check.IsFail(err))
 }
@@ -180,7 +180,7 @@ func TestOpenSCAPCheckFailLowScore(t *testing.T) {
 		},
 	})
 
-	err := chk.Func(chk.Meta, config)
+	err := runCheck(t, chk, config)
 	require.Error(t, err)
 	assert.True(t, check.IsFail(err))
 }
@@ -243,7 +243,7 @@ func TestOpenSCAPCheckFailHighSeverityRules(t *testing.T) {
 		},
 	})
 
-	err := chk.Func(chk.Meta, config)
+	err := runCheck(t, chk, config)
 	require.Error(t, err)
 	assert.True(t, check.IsFail(err))
 }
@@ -304,7 +304,7 @@ func TestOpenSCAPCheckIgnoreHighSeverityRules(t *testing.T) {
 		},
 	})
 
-	require.NoError(t, chk.Func(chk.Meta, config))
+	require.NoError(t, runCheck(t, chk, config))
 }
 
 func TestOpenSCAPCheckIgnoreAndFailHighSeverityRules(t *testing.T) {
@@ -363,7 +363,7 @@ func TestOpenSCAPCheckIgnoreAndFailHighSeverityRules(t *testing.T) {
 		},
 	})
 
-	err := chk.Func(chk.Meta, config)
+	err := runCheck(t, chk, config)
 	require.Error(t, err)
 	assert.True(t, check.IsFail(err))
 }
@@ -419,7 +419,7 @@ func TestOpenSCAPCheckFailExtractScore(t *testing.T) {
 		},
 	})
 
-	err := chk.Func(chk.Meta, config)
+	err := runCheck(t, chk, config)
 	require.Error(t, err)
 	assert.True(t, check.IsFail(err))
 }
@@ -476,7 +476,7 @@ func TestOpenSCAPCheckFailExtractRules(t *testing.T) {
 		},
 	})
 
-	err := chk.Func(chk.Meta, config)
+	err := runCheck(t, chk, config)
 	require.Error(t, err)
 	assert.True(t, check.IsFail(err))
 }
@@ -536,7 +536,7 @@ func TestOpenSCAPCheckNullDatastreamRHEL(t *testing.T) {
 		},
 	})
 
-	require.NoError(t, chk.Func(chk.Meta, config))
+	require.NoError(t, runCheck(t, chk, config))
 }
 
 func TestOpenSCAPCheckSkipRHEL7(t *testing.T) {
@@ -558,7 +558,7 @@ func TestOpenSCAPCheckSkipRHEL7(t *testing.T) {
 		},
 	})
 
-	err := chk.Func(chk.Meta, config)
+	err := runCheck(t, chk, config)
 	require.Error(t, err)
 	assert.True(t, check.IsSkip(err))
 	assert.Contains(t, err.Error(), "only XCCDF 1.2 is supported")
@@ -610,7 +610,7 @@ func TestOpenSCAPCheckFailNoTestResult(t *testing.T) {
 		},
 	})
 
-	err := chk.Func(chk.Meta, config)
+	err := runCheck(t, chk, config)
 	require.Error(t, err)
 	assert.True(t, check.IsFail(err))
 	assert.Contains(t, err.Error(), "expected exactly one test result")
@@ -674,7 +674,7 @@ func TestOpenSCAPCheckFailMultipleTestResults(t *testing.T) {
 		},
 	})
 
-	err := chk.Func(chk.Meta, config)
+	err := runCheck(t, chk, config)
 	require.Error(t, err)
 	assert.True(t, check.IsFail(err))
 	assert.Contains(t, err.Error(), "expected exactly one test result")

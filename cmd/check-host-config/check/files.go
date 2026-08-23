@@ -36,9 +36,7 @@ func filesFromYAML(node *yaml.Node) (CheckParams, error) {
 func init() {
 	RegisterCheckWithParams(RegisteredCheck{
 		Meta: &Metadata{
-			Name:                   "files",
-			RequiresBlueprint:      true,
-			RequiresCustomizations: true,
+			Name: "files",
 		},
 		ParamFunc:       filesCheck,
 		FromBuildConfig: filesFromConfig,

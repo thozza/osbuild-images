@@ -79,14 +79,15 @@ func runChecks(checks []check.RegisteredCheck, config *buildconfig.BuildConfig, 
 			err = check.Skip(osRelease.ID + "-" + osRelease.VersionID + " excluded via RunOn: " + strings.Join(meta.RunOn, ", "))
 		case meta.TempDisabled != "":
 			err = check.Skip("temporarily disabled: " + meta.TempDisabled)
-		case meta.RequiresBlueprint && (config == nil || config.Blueprint == nil):
-			err = check.Skip("no blueprint")
-		case meta.RequiresCustomizations && (config == nil || config.Blueprint == nil || config.Blueprint.Customizations == nil):
-			err = check.Skip("no customizations")
-		case meta.RequiresBootc && (config == nil || config.Options.Bootc == nil):
-			err = check.Skip("not a bootc image")
 		default:
-			err = chk.Func(meta, config)
+			params, extractErr := chk.FromBuildConfig(config)
+			if extractErr != nil {
+				err = extractErr
+			} else if params == nil {
+				err = check.Skip("no relevant configuration")
+			} else {
+				err = chk.ParamFunc(meta, params)
+			}
 		}
 
 		results = append(results, check.Result{Meta: meta, Error: err})

@@ -38,9 +38,7 @@ func oscapFromYAML(node *yaml.Node) (CheckParams, error) {
 func init() {
 	RegisterCheckWithParams(RegisteredCheck{
 		Meta: &Metadata{
-			Name:                   "oscap",
-			RequiresBlueprint:      true,
-			RequiresCustomizations: true,
+			Name: "oscap",
 		},
 		ParamFunc:       openSCAPCheck,
 		FromBuildConfig: oscapFromConfig,

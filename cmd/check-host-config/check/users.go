@@ -26,9 +26,7 @@ func usersFromYAML(node *yaml.Node) (CheckParams, error) {
 func init() {
 	RegisterCheckWithParams(RegisteredCheck{
 		Meta: &Metadata{
-			Name:                   "users",
-			RequiresBlueprint:      true,
-			RequiresCustomizations: true,
+			Name: "users",
 		},
 		ParamFunc:       usersCheck,
 		FromBuildConfig: usersFromConfig,

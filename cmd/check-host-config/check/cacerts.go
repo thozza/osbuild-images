@@ -29,9 +29,7 @@ func caCertsFromYAML(node *yaml.Node) (CheckParams, error) {
 func init() {
 	RegisterCheckWithParams(RegisteredCheck{
 		Meta: &Metadata{
-			Name:                   "cacerts",
-			RequiresBlueprint:      true,
-			RequiresCustomizations: true,
+			Name: "cacerts",
 		},
 		ParamFunc:       cacertsCheck,
 		FromBuildConfig: cacertsFromConfig,

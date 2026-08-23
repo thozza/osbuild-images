@@ -34,9 +34,7 @@ func directoriesFromYAML(node *yaml.Node) (CheckParams, error) {
 func init() {
 	RegisterCheckWithParams(RegisteredCheck{
 		Meta: &Metadata{
-			Name:                   "directories",
-			RequiresBlueprint:      true,
-			RequiresCustomizations: true,
+			Name: "directories",
 		},
 		ParamFunc:       directoriesCheck,
 		FromBuildConfig: directoriesFromConfig,

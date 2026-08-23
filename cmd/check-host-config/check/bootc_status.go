@@ -14,8 +14,7 @@ func bootcStatusFromYAML(node *yaml.Node) (CheckParams, error) {
 func init() {
 	RegisterCheckWithParams(RegisteredCheck{
 		Meta: &Metadata{
-			Name:          "bootc-status",
-			RequiresBootc: true,
+			Name: "bootc-status",
 		},
 		ParamFunc:       bootcStatusCheck,
 		FromBuildConfig: bootcStatusFromConfig,

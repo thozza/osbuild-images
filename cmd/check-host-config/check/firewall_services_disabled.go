@@ -9,9 +9,7 @@ import (
 func init() {
 	RegisterCheckWithParams(RegisteredCheck{
 		Meta: &Metadata{
-			Name:                   "fw-srv-disabled",
-			RequiresBlueprint:      true,
-			RequiresCustomizations: true,
+			Name: "fw-srv-disabled",
 		},
 		ParamFunc:       firewallServicesDisabledCheck,
 		FromBuildConfig: firewallServicesDisabledFromConfig,

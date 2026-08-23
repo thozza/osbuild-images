@@ -24,10 +24,8 @@ func kernelFromYAML(node *yaml.Node) (CheckParams, error) {
 func init() {
 	RegisterCheckWithParams(RegisteredCheck{
 		Meta: &Metadata{
-			Name:                   "kernel",
-			RequiresBlueprint:      true,
-			RequiresCustomizations: true,
-			TempDisabled:           "https://github.com/osbuild/image-builder/pull/2175",
+			Name:         "kernel",
+			TempDisabled: "https://github.com/osbuild/image-builder/pull/2175",
 		},
 		ParamFunc:       kernelCheck,
 		FromBuildConfig: kernelFromConfig,

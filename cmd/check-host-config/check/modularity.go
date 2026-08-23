@@ -27,9 +27,8 @@ func modularityFromYAML(node *yaml.Node) (CheckParams, error) {
 func init() {
 	RegisterCheckWithParams(RegisteredCheck{
 		Meta: &Metadata{
-			Name:              "modularity",
-			RequiresBlueprint: true,
-			RunOn:             []string{"centos-9"},
+			Name:  "modularity",
+			RunOn: []string{"centos-9"},
 		},
 		ParamFunc:       modularityCheck,
 		FromBuildConfig: modularityFromConfig,

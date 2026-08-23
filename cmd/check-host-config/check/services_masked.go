@@ -7,17 +7,33 @@ import (
 )
 
 func init() {
-	RegisterCheck(Metadata{
-		Name:                   "srv-masked",
-		RequiresBlueprint:      true,
-		RequiresCustomizations: true,
-	}, servicesMaskedCheck)
+	RegisterCheckWithParams(RegisteredCheck{
+		Meta: &Metadata{
+			Name:                   "srv-masked",
+			RequiresBlueprint:      true,
+			RequiresCustomizations: true,
+		},
+		ParamFunc:       servicesMaskedCheck,
+		FromBuildConfig: servicesMaskedFromConfig,
+		FromYAML:        serviceListFromYAML,
+	})
 }
 
-func servicesMaskedCheck(meta *Metadata, config *buildconfig.BuildConfig) error {
-	services := config.Blueprint.Customizations.Services
+func servicesMaskedFromConfig(c *buildconfig.BuildConfig) (CheckParams, error) {
+	if c == nil || c.Blueprint == nil || c.Blueprint.Customizations == nil {
+		return nil, nil
+	}
+	services := c.Blueprint.Customizations.Services
 	if services == nil || len(services.Masked) == 0 {
-		return Skip("no masked services to check")
+		return nil, nil
+	}
+	return ServiceListParams{Services: services.Masked}, nil
+}
+
+func servicesMaskedCheck(meta *Metadata, params CheckParams) error {
+	p, ok := params.(ServiceListParams)
+	if !ok {
+		return Fail("invalid params type")
 	}
 
 	stdout, _, _, err := ExecString("systemctl", "list-unit-files", "--state=masked")
@@ -25,7 +41,7 @@ func servicesMaskedCheck(meta *Metadata, config *buildconfig.BuildConfig) error 
 		return Fail("failed to list masked services:", err)
 	}
 
-	for _, service := range services.Masked {
+	for _, service := range p.Services {
 		// Prevent false positives by appending suffix if it is not present
 		if !strings.Contains(service, ".") {
 			service = service + ".service"
